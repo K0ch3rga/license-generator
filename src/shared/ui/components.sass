@@ -1,0 +1,229 @@
+@import theme-colors
+@import uikit-variables
+
+.text-input.text-input
+  border-radius: $border-radius
+  .q-field__control
+    height: 24px
+    min-width: 242px
+    font-size: 12px
+    border-radius: $border-radius
+    color: var(--blue1)
+    &.q-field__control::after
+      border-width: $border-width
+    &::before
+      border: $border-width solid var(--grey3)
+
+    &:hover::before
+      border-color: var(--grey4)
+    &.text-negative
+      color: var(--red) !important
+
+  .q-field__bottom
+    color: var(--red)
+    padding: 5px 0 0 0
+
+  .q-field__marginal
+    height: inherit
+
+.q-btn.btn
+  font-size: 10px
+  border-radius: $border-radius
+  &::before
+    font-weight: inherit
+
+  &
+    color: var(--blue1)
+  &:hover
+    color: var(--blue4)
+  &.disabled
+    color: var(--grey5)
+
+  &.btn-stroke
+    &::before
+      border: $border-width solid currentColor
+
+    &:hover .q-focus-helper
+      background-color: var(--background) !important
+
+  &.btn-fill
+    background-color: currentColor !important
+    .q-btn__content
+      color: var(--button-text)
+
+  &.small
+    min-width: 90px
+    height: 24px
+
+  &.medium
+    min-width: 240px
+    height: 32px
+
+  &.btn-link
+    &:hover .q-focus-helper
+      background-color: var(--background) !important
+
+.q-icon.fill
+  font-variation-settings: 'FILL' 1
+
+.q-btn-group.toggle
+  padding: 2px
+  border-radius: 12px
+  background-color: var(--blue3)
+  color: var(--blue1)
+
+  button
+    padding: 3px
+    height: 24px
+    width: 24px
+    min-height: 14px
+    &.bg-primary
+      background-color: var(--blue1) !important
+    &.q-button-item
+      border-radius: inherit
+    &.q-btn-item
+      border-radius: inherit
+
+    .q-btn__content
+      height: 24px !important
+
+    .q-focus-helper
+      height: 0
+      width: 0
+
+.q-header.q-header
+  background: transparent
+  color: var(--color-text)
+
+body
+  font-family: $font-family !important
+  &.body--dark.body--dark
+    background: var(--background)
+
+.q-chip.q-chip
+  height: 24px
+  width: 242px
+  margin-right: 0
+  margin-left: 0
+  border: $border-width solid currentColor
+  border-radius: $border-radius
+  &.error-label
+    color: var(--red)
+  .q-chip__icon--left
+    color: inherit
+    font-size: 1em
+
+.q-file.file-upload.file-upload
+  width: 242px
+  &.q-field--highlighted
+    color: var(--blue1)
+    .q-field__control::after
+      border: $border-width solid var(--blue1)
+  .q-field__control
+    min-height: 24px
+    height: 24px
+    color: inherit
+    border-radius: $border-radius
+    &::before
+      border-color: var(--grey3)
+    &:hover::before
+      border-color: var(--grey4)
+    .q-field__control-container
+      // display: none
+  .q-field__marginal
+    height: 24px
+  .q-field__native
+    min-height: inherit
+    padding: 0
+    word-break: inherit
+    white-space: pre
+
+.q-card.popup
+  background: var(--background)
+  border-radius: $border-radius
+  border: $border-width solid var(--grey3)
+
+.q-menu
+  border-radius: $border-radius !important
+.q-date.date-input
+  border-radius: $border-radius
+  border: $border-width solid var(--grey3)
+
+@supports selector(::-webkit-scrollbar)
+  ::-webkit-scrollbar
+    width: 10px
+    border: 1px solid var(--grey2)
+    border-top-width: 0
+    border-bottom-width: 0
+
+  ::-webkit-scrollbar-track
+    background: trasparent
+    border-radius: 20px
+
+  ::-webkit-scrollbar-thumb
+    background: var(--grey3)
+    border-radius: 20px
+    border: 3px solid var(--background)
+
+@supports not selector(::-webkit-scrollbar)
+  body
+    scrollbar-color: var(--grey3) transparent
+
+.q-table__container
+  &.q-table--flat
+    background: transparent
+  .q-icon
+    color: inherit
+    font-size: 1.5em
+    font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48
+  .q-table td
+    border-color: var(--grey2)
+
+.q-toolbar--inset.q-toolbar--inset
+  padding-left: 12px
+  min-height: 12px
+
+.text-h1
+  font: $h1-font-size $font-family $h1-font-weight $h1-line-height
+  letter-spacing: $h1-letter-spacing
+  color: var(--color-text)
+
+.text-h2
+  font: $h2-font-size $font-family $h2-font-weight $h2-line-height
+  letter-spacing: $h2-letter-spacing
+  color: var(--color-text)
+
+.text-h3.text-h3
+  font-size: $h3-font-size
+  font-weight: $h3-font-weight
+  letter-spacing: $h3-letter-spacing
+  color: var(--color-text)
+
+.text-body1
+  font-size: $M-font-size
+  font-weight: $M-font-weight
+  letter-spacing: $M-letter-spacing
+  color: var(--color-text)
+  &.bold
+    font-weight: $M-bold-font-weight
+
+.text-body2
+  font-size: $S-font-size
+  font-weight: $S-font-weight
+  letter-spacing: $S-letter-spacing
+  color: var(--color-text)
+  &.bold
+    font-weight: $S-bold-font-weight
+
+.text-button
+  &.medium
+    font-size: $M-button-font-size
+    font-weight: $M-button-font-weight
+    letter-spacing: $M-button-letter-spacing
+  &.small
+    font-size: $S-button-font-size
+    font-weight: $S-button-font-weight
+    letter-spacing: $S-button-letter-spacing
+
+*,*::before,*::after
+  font-weight: unset
