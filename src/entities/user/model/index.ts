@@ -1,2 +1,1 @@
-export { type Token, getToken, getUserInfo } from './user'
-export { useUserStore } from './store'
+export { useUserStore, type UserInfo } from "./store"
