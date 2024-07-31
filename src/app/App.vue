@@ -1,32 +1,29 @@
 <script setup lang="ts">
-import { LicensePage } from "@/pages/licensePage"
-import { LoginPage } from "@/pages/loginPage"
-import { getUserInfo, useUserStore, type UserInfo } from "@/entities/user"
-import { useQuasar } from "quasar"
-import { decodeJwt } from "jose"
+import { getUserInfo, useUserStore, type UserInfo } from '@/entities/user'
+import { useQuasar } from 'quasar'
+import { decodeJwt } from 'jose'
 
 const $q = useQuasar()
 
-const theme = $q.cookies.get("theme")
-if (theme) $q.dark.set(theme == "dark")
-else $q.dark.set("auto")
+const theme = $q.cookies.get('theme')
+if (theme) $q.dark.set(theme == 'dark')
+else $q.dark.set('auto')
 
-$q.iconSet.table.arrowUp = "sym_s_arrow_drop_down"
+$q.iconSet.table.arrowUp = 'sym_s_arrow_drop_down'
 
 const user = useUserStore()
 getUserInfo()
   .then((u) => {
-    u != "null"
+    u != 'null'
       ? user.setUser(decodeJwt<UserInfo>(u).username)
-      : console.log("no user")
+      : console.log('no user')
   })
   .catch((e) => console.log(e))
 </script>
 
 <template>
   <q-layout view="hHh lpR fFf">
-    <LicensePage v-if="user.isLogged" />
-    <LoginPage v-else />
+    <router-view />
   </q-layout>
 </template>
 

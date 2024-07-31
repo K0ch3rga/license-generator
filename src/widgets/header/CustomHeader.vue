@@ -3,6 +3,7 @@ import { useUserStore } from '@/entities/user'
 import { GenerateLicense } from '@/features/generateLicense'
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const theme = ref($q.dark.isActive)
@@ -10,19 +11,27 @@ const emits = defineEmits<{ licenseGenerated: [] }>()
 
 const toggleTheme = () => {
   $q.cookies.set('theme', theme.value ? 'dark' : 'light', {
-    expires: 399 // max time allowed by chrome
+    expires: 399, // max time allowed by chrome
   })
   $q.dark.set(theme.value)
 }
 
 const user = useUserStore()
+
+const handleLogout = () => {
+  useRouter().replace('login')
+  user.logout()
+}
 </script>
 <template>
   <q-header class="q-px-lg q-py-lg">
     <q-toolbar>
       <q-toolbar-title class="text-h3"> Генератор лицензий </q-toolbar-title>
       <div class="grow">
-        <GenerateLicense @add-license="emits('licenseGenerated')" v-if="user.isLogged" />
+        <GenerateLicense
+          @add-license="emits('licenseGenerated')"
+          v-if="user.isLogged"
+        />
       </div>
       <q-btn-toggle
         unelevated
@@ -31,12 +40,16 @@ const user = useUserStore()
         v-model:="theme"
         :options="[
           { value: false, slot: 'day' },
-          { value: true, slot: 'night' }
+          { value: true, slot: 'night' },
         ]"
         @update:model-value="toggleTheme"
       >
-        <template v-slot:day><q-icon size="14px" class="fill" name="sym_s_clear_day" /></template>
-        <template v-slot:night><q-icon size="14px" class="fill" name="sym_s_bedtime" /></template>
+        <template v-slot:day
+          ><q-icon size="14px" class="fill" name="sym_s_clear_day"
+        /></template>
+        <template v-slot:night
+          ><q-icon size="14px" class="fill" name="sym_s_bedtime"
+        /></template>
       </q-btn-toggle>
       <q-btn
         v-if="user.isLogged"
@@ -52,7 +65,7 @@ const user = useUserStore()
         flat
         label="Выйти"
         class="btn btn-stroke small"
-        @click="() => user.logout()"
+        @click="handleLogout"
       />
     </q-toolbar>
   </q-header>

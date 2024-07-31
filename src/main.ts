@@ -11,19 +11,22 @@ import '@quasar/extras/material-symbols-sharp/material-symbols-sharp.css'
 
 // Import Quasar css
 import 'quasar/src/css/index.sass'
+import { router } from './app/router'
 
 const app = createApp(App)
 
 app.use(createPinia())
 
+app.use(router)
+
 app.use(Quasar, {
   config: {
-    dark: 'auto'
+    dark: 'auto',
   },
   plugins: {
-    Cookies
+    Cookies,
   }, // import Quasar plugins and add here
-  iconSet: quasarIconSet
+  iconSet: quasarIconSet,
 })
 
 app.mount('#app')

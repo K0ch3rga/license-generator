@@ -1,35 +1,38 @@
 <script setup lang="ts">
-import { getToken, useUserStore } from "@/entities/user"
-import { Header } from "@/widgets/header"
-import { ref } from "vue"
-import { getDescriptionByCode } from "./loginErrorCodes"
-import { Cookies } from "quasar"
-import { decodeJwt } from "jose"
-import type { UserInfo } from "@/entities/user"
+import { getToken, useUserStore } from '@/entities/user'
+import { Header } from '@/widgets/header'
+import { ref } from 'vue'
+import { getDescriptionByCode } from './loginErrorCodes'
+import { Cookies } from 'quasar'
+import { decodeJwt } from 'jose'
+import type { UserInfo } from '@/entities/user'
+import { useRouter } from 'vue-router'
 
-const login = ref<string>("")
-const password = ref<string>("")
-const error = ref<string>("")
+const login = ref<string>('')
+const password = ref<string>('')
+const error = ref<string>('')
 const loading = ref<boolean>(false)
 const user = useUserStore()
+const routes = useRouter()
 
 const handleLogin = async () => {
   loading.value = true
   getToken(login.value, password.value)
     .then((t) => {
       const time = new Date().getTime() + 7200000 // 2h
-      Cookies.set("session", t.access_token, {
+      Cookies.set('session', t.access_token, {
         expires: new Date(time).toUTCString(),
       })
       user.setUser(decodeJwt<UserInfo>(t.access_token).username)
       console.log(decodeJwt<UserInfo>(t.access_token))
+      routes.replace({ name: 'main' })
     })
     .catch((e) => (error.value = getDescriptionByCode(e)))
     .finally(() => (loading.value = false))
 }
 
 const closeError = () => {
-  error.value = ""
+  error.value = ''
 }
 </script>
 <template>
