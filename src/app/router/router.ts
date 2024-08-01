@@ -1,4 +1,5 @@
 import { useUserStore } from '@/entities/user'
+import { AdminPage } from '@/pages/adminPage'
 import { LicensePage } from '@/pages/licensePage'
 import { LoginPage } from '@/pages/loginPage'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
@@ -18,7 +19,7 @@ const routes: RouteRecordRaw[] = [
   },
   {
     path: '/admin',
-    redirect: 'login',
+    component: AdminPage,
     name: 'admin',
     meta: { requiresAuth: true },
   },
@@ -26,9 +27,18 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({ routes, history: createWebHistory() })
 
-router.beforeEach((to) => {
-  if (!to.meta.requiresAuth) return true
-  if (!useUserStore().isLogged) return { name: 'login' }
+router.beforeEach(async (to) => {
+  const user = useUserStore()
+  console.log(to)
+  console.log(
+    'login: ',
+    user.getLogin,
+    typeof user.getLogin,
+    '\nlogged: ',
+    user.isLogged
+  )
+  if (to.meta.requiresAuth && !user.isLogged) return { name: 'login' }
+  if (to.name == 'login' && user.isLogged) return { name: 'main' }
 })
 
 export { router }

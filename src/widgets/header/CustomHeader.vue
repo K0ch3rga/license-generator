@@ -17,10 +17,10 @@ const toggleTheme = () => {
 }
 
 const user = useUserStore()
-
+const routes = useRouter()
 const handleLogout = () => {
-  useRouter().replace('login')
   user.logout()
+  routes.push({ name: 'login' })
 }
 </script>
 <template>

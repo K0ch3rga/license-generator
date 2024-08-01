@@ -1,0 +1,1 @@
+export { setSessionFromCookies } from './getSessionFromCookies'

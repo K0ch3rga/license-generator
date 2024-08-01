@@ -1,7 +1,5 @@
 <script setup lang="ts">
-import { getUserInfo, useUserStore, type UserInfo } from '@/entities/user'
 import { useQuasar } from 'quasar'
-import { decodeJwt } from 'jose'
 
 const $q = useQuasar()
 
@@ -10,15 +8,6 @@ if (theme) $q.dark.set(theme == 'dark')
 else $q.dark.set('auto')
 
 $q.iconSet.table.arrowUp = 'sym_s_arrow_drop_down'
-
-const user = useUserStore()
-getUserInfo()
-  .then((u) => {
-    u != 'null'
-      ? user.setUser(decodeJwt<UserInfo>(u).username)
-      : console.log('no user')
-  })
-  .catch((e) => console.log(e))
 </script>
 
 <template>
