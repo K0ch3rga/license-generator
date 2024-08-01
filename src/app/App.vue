@@ -11,7 +11,7 @@ $q.iconSet.table.arrowUp = 'sym_s_arrow_drop_down'
 </script>
 
 <template>
-  <q-layout view="hHh lpR fFf">
+  <q-layout view="hHh lpR lFf">
     <router-view />
   </q-layout>
 </template>

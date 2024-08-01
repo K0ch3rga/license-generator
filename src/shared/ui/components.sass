@@ -91,6 +91,27 @@
       height: 0
       width: 0
 
+.q-select.select.select
+  border-radius: $border-radius
+  .q-field__control
+    border-radius: $border-radius
+    min-height: 24px
+    height: 24px
+    &
+      color: var(--grey3)
+    &:hover
+      color: var(--grey4)
+    &::before
+      border: $border-width solid currentColor
+    &::after
+      border-width: $border-width
+    
+    .q-field__native
+      min-height: inherit
+  .q-field__marginal
+    height: 24px
+
+
 .q-header.q-header
   background: transparent
   color: var(--color-text)
@@ -199,10 +220,11 @@ body
   letter-spacing: $h3-letter-spacing
   color: var(--color-text)
 
-.text-body1
-  font-size: $M-font-size
+.text-body1.text-body1
+  font-size: $M-font-size 
   font-weight: $M-font-weight
   letter-spacing: $M-letter-spacing
+  line-height: 1em
   color: var(--color-text)
   &.bold
     font-weight: $M-bold-font-weight
