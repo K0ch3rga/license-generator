@@ -45,112 +45,114 @@ const roleSelectOptions = ref(['User', 'Manager', 'Developer'])
 <template>
   <Header />
   <q-page-container>
-    <div class="padded q-mr-md">
-      <q-table
-        class="text-body1"
-        v-if="table == 'roles'"
-        flat
-        hide-bottom
-        :columns="authoritiesColumns"
-        :rows="authorities"
-      >
-        <template v-slot:top>
-          <q-space />
-          <q-btn
-            flat
-            class="btn btn-fill text-button small q-mx-xs"
-            label="Добавить"
-          />
-          <q-btn
-            flat
-            class="btn btn-fill text-button small q-mx-xs"
-            label="Удалить"
-          />
-          <q-btn
-            flat
-            class="btn btn-fill text-button small q-mx-xs"
-            label="Обновить"
-          />
-        </template>
-        <template v-slot:body-cell-authority="props">
-          <q-td :props="props">
-            {{ props.value }}
-          </q-td>
-        </template>
-        <template v-slot:body-cell="props">
-          <q-td :props="props">
-            <q-checkbox
-              :model-value="props.value"
-              class="checkbox"
-              size="32px"
+    <q-page>
+      <div class="padded q-mr-md">
+        <q-table
+          class="text-body1"
+          v-if="table == 'roles'"
+          flat
+          hide-bottom
+          :columns="authoritiesColumns"
+          :rows="authorities"
+        >
+          <template v-slot:top>
+            <q-space />
+            <q-btn
+              flat
+              class="btn btn-fill text-button small q-mx-xs"
+              label="Добавить"
             />
-          </q-td>
-        </template>
-      </q-table>
+            <q-btn
+              flat
+              class="btn btn-fill text-button small q-mx-xs"
+              label="Удалить"
+            />
+            <q-btn
+              flat
+              class="btn btn-fill text-button small q-mx-xs"
+              label="Обновить"
+            />
+          </template>
+          <template v-slot:body-cell-authority="props">
+            <q-td :props="props">
+              {{ props.value }}
+            </q-td>
+          </template>
+          <template v-slot:body-cell="props">
+            <q-td :props="props">
+              <q-checkbox
+                :model-value="props.value"
+                class="checkbox"
+                size="32px"
+              />
+            </q-td>
+          </template>
+        </q-table>
 
-      <q-table
-        class="text-body1"
-        v-if="table == 'users'"
-        flat
-        hide-bottom
-        :columns="userCoulumns"
-        :rows="usersData"
-      >
-        <template v-slot:top>
-          <q-space />
-          <q-btn
-            flat
-            class="btn btn-fill text-button small q-mx-xs"
-            label="Добавить"
-          />
-          <q-btn
-            flat
-            class="btn btn-fill text-button small q-mx-xs"
-            label="Удалить"
-          />
-          <q-btn
-            flat
-            class="btn btn-fill text-button small q-mx-xs"
-            label="Обновить"
-          />
-        </template>
-        <template v-slot:body-cell-role="props">
-          <q-td :props="props">
-            <q-select
-              outlined
-              rounded
-              dense
-              options-dense
-              class="select text-body1"
-              :model-value="props.value"
-              :options="roleSelectOptions"
+        <q-table
+          class="text-body1 q-pb-xs"
+          v-if="table == 'users'"
+          flat
+          hide-bottom
+          :columns="userCoulumns"
+          :rows="usersData"
+        >
+          <template v-slot:top>
+            <q-space />
+            <q-btn
+              flat
+              class="btn btn-fill text-button small q-mx-xs"
+              label="Добавить"
             />
-          </q-td>
-        </template>
-      </q-table>
-    </div>
-    <q-page-sticky expand position="left">
-      <div class="fit q-pt-xl q-px-sm column">
-        <q-btn
-          flat
-          :ripple="false"
-          align="left"
-          class="menu-item text-body1"
-          :class="table == 'users' ? 'active' : ''"
-          @click="() => (table = 'users')"
-          >Пользователи
-        </q-btn>
-        <q-btn
-          flat
-          :ripple="false"
-          align="left"
-          class="menu-item text-body1"
-          :class="table == 'roles' ? 'active' : ''"
-          @click="() => (table = 'roles')"
-          >Роли
-        </q-btn>
+            <q-btn
+              flat
+              class="btn btn-fill text-button small q-mx-xs"
+              label="Удалить"
+            />
+            <q-btn
+              flat
+              class="btn btn-fill text-button small q-mx-xs"
+              label="Обновить"
+            />
+          </template>
+          <template v-slot:body-cell-role="props">
+            <q-td :props="props">
+              <q-select
+                outlined
+                rounded
+                dense
+                options-dense
+                class="select text-body1"
+                :model-value="props.value"
+                :options="roleSelectOptions"
+              />
+            </q-td>
+          </template>
+        </q-table>
       </div>
-    </q-page-sticky>
+      <q-page-sticky expand position="left">
+        <div class="fit q-pt-xl q-px-sm column">
+          <q-btn
+            flat
+            :ripple="false"
+            align="left"
+            class="menu-item text-body1"
+            :class="table == 'users' ? 'active' : ''"
+            @click="() => (table = 'users')"
+            >Пользователи
+          </q-btn>
+          <q-btn
+            flat
+            :ripple="false"
+            align="left"
+            class="menu-item text-body1"
+            :class="table == 'roles' ? 'active' : ''"
+            @click="() => (table = 'roles')"
+            >Роли
+          </q-btn>
+        </div>
+      </q-page-sticky>
+    </q-page>
   </q-page-container>
 </template>
 <style scoped lang="sass">

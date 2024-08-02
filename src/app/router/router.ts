@@ -2,6 +2,7 @@ import { useUserStore } from '@/entities/user'
 import { AdminPage } from '@/pages/adminPage'
 import { LicensePage } from '@/pages/licensePage'
 import { LoginPage } from '@/pages/loginPage'
+import { NotFoundPage } from '@/pages/notFoundPage'
 import { createRouter, createWebHistory, type RouteRecordRaw } from 'vue-router'
 
 const routes: RouteRecordRaw[] = [
@@ -22,6 +23,11 @@ const routes: RouteRecordRaw[] = [
     component: AdminPage,
     name: 'admin',
     meta: { requiresAuth: true },
+  },
+  {
+    path: '/:pathMatch(.*)*',
+    component: NotFoundPage,
+    meta: { requiresAuth: false },
   },
 ]
 

@@ -6,3 +6,6 @@ node_modules
 backend.lnk
 
 .env
+
+.todo
+.todo.md
