@@ -29,6 +29,11 @@ const usersData = ref([
     name: 'not oleg',
     role: authoritiesColumns.value[1].label,
   },
+  {
+    email: 'igor@example.com',
+    name: 'definetly igor',
+    role: authoritiesColumns.value[1].label,
+  },
 ])
 const userCoulumns = ref<Column[]>([
   { field: 'email', name: 'email', label: 'Email', align: 'left' },
@@ -40,7 +45,7 @@ const roleSelectOptions = ref(['User', 'Manager', 'Developer'])
 <template>
   <Header />
   <q-page-container>
-    <div class="padded q-pr-md">
+    <div class="padded q-mr-md">
       <q-table
         class="text-body1"
         v-if="table == 'roles'"
@@ -74,7 +79,11 @@ const roleSelectOptions = ref(['User', 'Manager', 'Developer'])
         </template>
         <template v-slot:body-cell="props">
           <q-td :props="props">
-            <q-checkbox :model-value="props.value" />
+            <q-checkbox
+              :model-value="props.value"
+              class="checkbox"
+              size="32px"
+            />
           </q-td>
         </template>
       </q-table>
