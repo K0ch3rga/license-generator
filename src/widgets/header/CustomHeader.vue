@@ -26,13 +26,12 @@ const handleLogout = () => {
 <template>
   <q-header class="q-px-lg q-py-lg">
     <q-toolbar>
-      <q-toolbar-title class="text-h3"> Генератор лицензий </q-toolbar-title>
-      <div class="grow">
-        <GenerateLicense
-          @add-license="emits('licenseGenerated')"
-          v-if="user.isLogged"
-        />
-      </div>
+      <div class="text-h3 q-mr-md">Генератор лицензий</div>
+      <GenerateLicense
+        @add-license="emits('licenseGenerated')"
+        v-if="user.isLogged"
+      />
+      <q-space />
       <q-btn-toggle
         unelevated
         rounded
@@ -54,10 +53,18 @@ const handleLogout = () => {
       <q-btn
         v-if="user.isLogged"
         flat
-        class="btn btn-link small text-button q-mx-sm"
+        class="btn btn-link small text-button"
         icon="svguse:src/shared/assets/man.svg#man| 0 0 100 100"
         :label="user.getLogin"
         :ripple="false"
+      />
+      <q-btn
+        v-if="user.isLogged"
+        flat
+        class="btn btn-link q-mr-md"
+        icon="svguse:src/shared/assets/gear.svg#gear| 0 0 16 16"
+        :ripple="false"
+        to="admin"
       />
       <q-btn
         v-if="user.isLogged"
