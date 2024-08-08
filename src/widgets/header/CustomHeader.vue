@@ -22,11 +22,17 @@ const handleLogout = () => {
   user.logout()
   routes.push({ name: 'login' })
 }
+
+const navigateMain = () => {
+  routes.push({ name: 'main' })
+}
 </script>
 <template>
   <q-header class="q-px-lg q-py-lg">
     <q-toolbar>
-      <div class="text-h3 q-mr-md">Генератор лицензий</div>
+      <div class="text-h3 q-mr-md clickable-title" @click="navigateMain">
+        Генератор лицензий
+      </div>
       <GenerateLicense
         @add-license="emits('licenseGenerated')"
         v-if="user.isLogged"
@@ -82,4 +88,7 @@ const handleLogout = () => {
   flex: 0 1 min-content
 div.grow
   flex: 1 1 min-content
+
+.clickable-title
+  cursor: pointer
 </style>
