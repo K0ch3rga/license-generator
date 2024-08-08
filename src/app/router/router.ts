@@ -16,13 +16,13 @@ const routes: RouteRecordRaw[] = [
     path: '/login',
     component: LoginPage,
     name: 'login',
-    meta: { requiresAuth: false },
+    meta: { requiresAuth: true },
   },
   {
     path: '/admin',
     component: AdminPage,
     name: 'admin',
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, adminOnly: true },
   },
   {
     path: '/:pathMatch(.*)*',
@@ -33,7 +33,7 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({ routes, history: createWebHistory() })
 
-router.beforeEach(async (to) => {
+router.beforeEach(async (to, from) => {
   const user = useUserStore()
   console.log(to)
   console.log(
@@ -45,6 +45,7 @@ router.beforeEach(async (to) => {
   )
   if (to.meta.requiresAuth && !user.isLogged) return { name: 'login' }
   if (to.name == 'login' && user.isLogged) return { name: 'main' }
+  if (to.meta.adminOnly && !user.isLogged) return from
 })
 
 export { router }
