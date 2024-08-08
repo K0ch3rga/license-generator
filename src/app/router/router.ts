@@ -16,7 +16,7 @@ const routes: RouteRecordRaw[] = [
     path: '/login',
     component: LoginPage,
     name: 'login',
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: false },
   },
   {
     path: '/admin',

@@ -23,9 +23,4 @@ declare module 'vue-router/auto-routes' {
     '/loginPage/LoginPage': RouteRecordInfo<'/loginPage/LoginPage', '/loginPage/LoginPage', Record<never, never>, Record<never, never>>,
     '/notFoundPage/NotFoundPage': RouteRecordInfo<'/notFoundPage/NotFoundPage', '/notFoundPage/NotFoundPage', Record<never, never>, Record<never, never>>,
   }
-
-  export interface RouteMeta {
-    requiresAuth: boolean
-    isAdmin?: boolean
-  }
 }
