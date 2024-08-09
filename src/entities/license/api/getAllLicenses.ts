@@ -1,12 +1,12 @@
 import { BACKEND_CONNECTION } from '@/shared/config'
-import type { License } from './getLicense'
+import type { License } from '../License'
 import { Cookies } from 'quasar'
 
 export const getAllLicenses = async (): Promise<License[]> =>
   await fetch(BACKEND_CONNECTION + 'all_licenses', {
     headers: {
-      Authorization: 'Bearer ' + Cookies.get('session')
-    }
+      Authorization: 'Bearer ' + Cookies.get('session'),
+    },
   })
     .then((r) => (r.ok ? r : Promise.reject(r.status)))
     .then((r) => r.json())
@@ -19,13 +19,14 @@ export const getAllLicenses = async (): Promise<License[]> =>
           licenseFileName: l.lic_file_name,
           licenseNumber: l.id.toString(),
           machineDigestFile: l.machine_digest_file,
-          productName: l.product_name
+          productName: l.product_name,
         })
       )
     )
     .catch((e) => Promise.reject(e))
 
-export const getErrorByCode = (code: number) => getAllCodes.get(code) ?? 'Сервер не отвечает'
+export const getErrorByCode = (code: number) =>
+  getAllCodes.get(code) ?? 'Сервер не отвечает'
 
 const getAllCodes = new Map<number, string>()
 getAllCodes.set(401, 'Вы не авторизованы')
