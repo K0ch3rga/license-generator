@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import { getAllLicenses, type License, getLicenseFile, getDigestFile } from '@/entities/license'
+import {
+  getAllLicenses,
+  type License,
+  getLicenseFile,
+  getDigestFile,
+} from '@/entities/license'
 import { exportTable, type Column } from '../model'
 import { onMounted, ref } from 'vue'
 import { exportFile } from 'quasar'
@@ -24,7 +29,9 @@ const beautifyDate = (date: Date): string => {
 }
 
 const downloadLicenseFile = (id: string) => {
-  getLicenseFile(id).then((r) => exportFile(r.filename ?? 'license file', r.blob))
+  getLicenseFile(id).then((r) =>
+    exportFile(r.filename ?? 'license file', r.blob)
+  )
 }
 
 const downloadDigestFile = (id: string) => {
@@ -41,7 +48,7 @@ const columns: Column[] = [
     sortable: true,
     sort: (a: number, b: number) => {
       return a - b
-    }
+    },
   },
   {
     name: 'name',
@@ -49,7 +56,7 @@ const columns: Column[] = [
     field: (l: License) => l.productName,
     align: 'left',
     required: true,
-    sortable: true
+    sortable: true,
   },
   {
     name: 'expiration',
@@ -58,7 +65,10 @@ const columns: Column[] = [
     align: 'left',
     required: true,
     sortable: true,
-    sort: (a: Date, b: Date) => new Date(a).getTime() - new Date(b).getTime()
+    //TODO Перенести сортировку в api // Я запутался зачем она в api, это же метод для сортировки в таблице
+    sort: (a: Date, b: Date) => {
+      return new Date(a).getTime() - new Date(b).getTime()
+    },
   },
   {
     name: 'digest',
@@ -66,7 +76,7 @@ const columns: Column[] = [
     field: (l: License) => l.machineDigestFile,
     align: 'left',
     required: true,
-    sortable: true
+    sortable: true,
   },
   {
     name: 'licenseFile',
@@ -74,12 +84,17 @@ const columns: Column[] = [
     field: (l: License) => l.licenseFileName,
     align: 'left',
     required: true,
-    sortable: true
-  }
+    sortable: true,
+  },
 ]
 </script>
 <template>
-  <q-input outlined class="q-mx-md text-input" placeholder="Поиск" v-model="filter">
+  <q-input
+    outlined
+    class="q-mx-md text-input"
+    placeholder="Поиск"
+    v-model="filter"
+  >
     <template v-slot:append>
       <q-icon size="10.5px" name="img:src/shared/assets/search.svg" />
     </template>

@@ -1,7 +1,10 @@
 import { BACKEND_CONNECTION } from '@/shared/config'
 import { Cookies } from 'quasar'
 
-export const generateLicense = async (digestFile: File | undefined, licenseInfo: LicenseInfo) => {
+export const generateLicense = async (
+  digestFile: File | undefined,
+  licenseInfo: LicenseInfo
+) => {
   const form = new FormData()
   form.set('company_name', licenseInfo.company_name)
   form.set('product_name', licenseInfo.product_name)
@@ -10,14 +13,15 @@ export const generateLicense = async (digestFile: File | undefined, licenseInfo:
   if (digestFile) form.set('machine_digest_file', digestFile)
   return await fetch(BACKEND_CONNECTION + 'generate_license', {
     headers: {
-      Authorization: 'Bearer ' + Cookies.get('session')
+      Authorization: 'Bearer ' + Cookies.get('session'),
     },
     method: 'POST',
-    body: form
+    body: form,
   })
+    .then((r) => (r.ok ? r : Promise.reject(r.status)))
     .then(async (r) => ({
       filename: r.headers.get('Content-Disposition'),
-      blob: await r.blob()
+      blob: await r.blob(),
     }))
     .catch((e) => Promise.reject(e))
 }
