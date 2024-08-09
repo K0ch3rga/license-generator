@@ -7,7 +7,7 @@ import {
 } from '@/entities/license'
 import { exportTable, type Column } from '../model'
 import { onMounted, ref } from 'vue'
-import { exportFile } from 'quasar'
+import { exportFile, date } from 'quasar'
 
 const licenses = ref<License[]>([])
 const error = ref('')
@@ -23,10 +23,6 @@ const refreshLicenses = () => {
     .finally(() => (loading.value = false))
 }
 onMounted(refreshLicenses)
-
-const beautifyDate = (date: Date): string => {
-  return [date.getDate(), date.getMonth() + 1, date.getFullYear()].join('.')
-}
 
 const downloadLicenseFile = (id: string) => {
   getLicenseFile(id).then((r) =>
@@ -46,9 +42,7 @@ const columns: Column[] = [
     align: 'left',
     required: true,
     sortable: true,
-    sort: (a: number, b: number) => {
-      return a - b
-    },
+    sort: (a: number, b: number) => a - b,
   },
   {
     name: 'name',
@@ -61,14 +55,13 @@ const columns: Column[] = [
   {
     name: 'expiration',
     label: 'Время окончания',
-    field: (l: License) => beautifyDate(l.expirationTime),
+    field: (l: License) => date.formatDate(l.expirationTime, 'D.M.YYYY'),
     align: 'left',
     required: true,
     sortable: true,
     //TODO Перенести сортировку в api // Я запутался зачем она в api, это же метод для сортировки в таблице
-    sort: (a: Date, b: Date) => {
-      return new Date(a).getTime() - new Date(b).getTime()
-    },
+    sort: (a, b, aRow, bRow) =>
+      aRow['expirationTime'].getTime() - bRow['expirationTime'].getTime(),
   },
   {
     name: 'digest',

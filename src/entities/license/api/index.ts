@@ -5,6 +5,11 @@ import { getLicenseFile } from './getLicenseFile'
 import { getDigestFile } from './getDigestFIle'
 
 export type { LicenseInfo } from './generateLicense'
-export type { License } from './getLicense'
 
-export { generateLicense, getLicense, getAllLicenses, getLicenseFile, getDigestFile }
+export {
+  generateLicense,
+  getLicense,
+  getAllLicenses,
+  getLicenseFile,
+  getDigestFile,
+}
