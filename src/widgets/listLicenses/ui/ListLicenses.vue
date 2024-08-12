@@ -5,7 +5,8 @@ import {
   getLicenseFile,
   getDigestFile,
 } from '@/entities/license'
-import { exportTable, type Column } from '../model'
+import { exportTable } from '../model'
+import { type Column } from '@/shared/model'
 import { onMounted, ref } from 'vue'
 import { exportFile, date } from 'quasar'
 

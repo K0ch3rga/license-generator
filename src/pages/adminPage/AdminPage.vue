@@ -1,11 +1,11 @@
 <script setup lang="ts">
-import { getAllAccesses } from '@/entities/accsses/api'
+import { getAllAccesses } from '@/entities/accsses'
 import type { Role } from '@/entities/role'
-import { getAllRoles } from '@/entities/role/api'
-import { getAllUsers } from '@/entities/user/api/getAllUsers'
+import { getAllRoles } from '@/entities/role'
+import { getAllUsers } from '@/entities/user'
 import type { User } from '@/entities/user/User'
 import { Header } from '@/widgets/header'
-import type { Column } from '@/widgets/listLicenses/model'
+import type { Column } from '@/shared/model'
 import { onBeforeMount, ref } from 'vue'
 
 const table = ref<string>('users')
@@ -104,11 +104,15 @@ const updateUserRole = (value: string, user: User) => {
   console.log(user)
 }
 
-onBeforeMount(() => {
+const handleUpdate = () => {
   const rolesPromise = getAllRoles()
   const acessesPromise = getAllAccesses()
   const usersPromice = getAllUsers()
   Promise.allSettled([rolesPromise, acessesPromise, usersPromice])
+}
+
+onBeforeMount(() => {
+  handleUpdate()
 })
 </script>
 <template>
@@ -140,6 +144,7 @@ onBeforeMount(() => {
               flat
               class="btn btn-fill text-button small q-mx-xs"
               label="Обновить"
+              @click="handleUpdate"
             />
           </template>
           <template v-slot:body-cell-name="props">
@@ -183,6 +188,7 @@ onBeforeMount(() => {
               flat
               class="btn btn-fill text-button small q-mx-xs"
               label="Обновить"
+              @click="handleUpdate"
             />
           </template>
           <template v-slot:body-cell-role="props">
