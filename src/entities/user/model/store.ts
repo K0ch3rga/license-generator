@@ -1,9 +1,10 @@
-import { defineStore } from "pinia"
-import { Cookies } from "quasar"
-import { computed, ref } from "vue"
+import { defineStore } from 'pinia'
+import { Cookies } from 'quasar'
+import { computed, ref } from 'vue'
+import type { User } from '../'
 
-export const useUserStore = defineStore("user", () => {
-  const user = ref<string>("")
+export const useUserStore = defineStore('user', () => {
+  const user = ref<string>('')
 
   const isLogged = computed(() => !!user.value)
   const getLogin = computed(() => user.value)
@@ -17,14 +18,11 @@ export const useUserStore = defineStore("user", () => {
   }
 
   function $reset() {
-    Cookies.remove("session")
-    user.value = ""
+    Cookies.remove('session')
+    user.value = ''
   }
 
   return { isLogged, getLogin, setUser, logout }
 })
 
-export type UserInfo = {
-  username: string
-  authorities: string[]
-}
+export type UserInfo = Omit<User, 'id'>

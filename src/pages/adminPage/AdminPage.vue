@@ -7,10 +7,16 @@ import type { User } from '@/entities/user/User'
 import { Header } from '@/widgets/header'
 import type { Column } from '@/shared/model'
 import { onBeforeMount, ref } from 'vue'
+import type { SelectableRole, SelectableUser } from './model/'
 
 const table = ref<string>('users')
 
 const authoritiesColumns = ref<Column[]>([
+  {
+    field: 'selected',
+    name: 'selected',
+    label: '',
+  },
   {
     field: 'name',
     name: 'name',
@@ -42,54 +48,59 @@ const authoritiesColumns = ref<Column[]>([
     align: 'center',
   },
 ])
-const authorities = ref<Role[]>([
-  {
-    id: 0,
-    name: 'User',
-    acesses: [],
-    READ_LICENSE: false,
-    CREATE_LICENSE: false,
-    READ_REPORT: false,
-    RETRIVE_FILE: true,
-  },
-  {
-    id: 0,
-    name: 'Manager',
-    acesses: [],
-    READ_LICENSE: true,
-    CREATE_LICENSE: true,
-    READ_REPORT: false,
-    RETRIVE_FILE: false,
-  },
-  {
-    id: 0,
-    name: 'Developer',
-    acesses: [],
-    READ_LICENSE: false,
-    CREATE_LICENSE: true,
-    READ_REPORT: false,
-    RETRIVE_FILE: true,
-  },
-])
+const authorities = ref<SelectableRole[]>(
+  [
+    {
+      id: 0,
+      name: 'User',
+      acesses: [],
+      READ_LICENSE: false,
+      CREATE_LICENSE: false,
+      READ_REPORT: false,
+      RETRIVE_FILE: true,
+    },
+    {
+      id: 0,
+      name: 'Manager',
+      acesses: [],
+      READ_LICENSE: true,
+      CREATE_LICENSE: true,
+      READ_REPORT: false,
+      RETRIVE_FILE: false,
+    },
+    {
+      id: 0,
+      name: 'Developer',
+      acesses: [],
+      READ_LICENSE: false,
+      CREATE_LICENSE: true,
+      READ_REPORT: false,
+      RETRIVE_FILE: true,
+    },
+  ].map((r) => ({ selected: false, ...r }))
+)
 
-const usersData = ref<User[]>([
-  {
-    email: 'admin',
-    name: 'admin',
-    role: authorities.value[2].name,
-  },
-  {
-    email: 'oleg@example.com',
-    name: 'not oleg',
-    role: authorities.value[1].name,
-  },
-  {
-    email: 'igor@example.com',
-    name: 'definetly igor',
-    role: authorities.value[1].name,
-  },
-])
+const usersData = ref<SelectableUser[]>(
+  [
+    {
+      email: 'admin',
+      name: 'admin',
+      role: authorities.value[2].name,
+    },
+    {
+      email: 'oleg@example.com',
+      name: 'not oleg',
+      role: authorities.value[1].name,
+    },
+    {
+      email: 'igor@example.com',
+      name: 'definetly igor',
+      role: authorities.value[1].name,
+    },
+  ].map((u) => ({ selected: false, ...u }) as unknown as SelectableUser)
+)
 const userCoulumns = ref<Column[]>([
+  { field: 'selected', name: 'selected', label: '' },
   { field: 'email', name: 'email', label: 'Email', align: 'left' },
   { field: 'name', name: 'name', label: 'Name', align: 'left' },
   { field: 'role', name: 'role', label: 'Role', align: 'left' },
@@ -190,6 +201,16 @@ onBeforeMount(() => {
               label="Обновить"
               @click="handleUpdate"
             />
+          </template>
+          <template v-slot:body-cell-selected="props">
+            <q-td :props="props">
+              <q-checkbox
+                v-model="props.row[props.col.name]"
+                @update:model-value="(v) => toggleRoleAuth(v, props.row)"
+                class="checkbox"
+                size="32px"
+              />
+            </q-td>
           </template>
           <template v-slot:body-cell-role="props">
             <q-td :props="props">
