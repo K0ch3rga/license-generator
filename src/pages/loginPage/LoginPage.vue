@@ -61,6 +61,7 @@ const closeError = () => {
           :rules="[(val) => !!val || 'Поле обязательно']"
           lazy-rules
           no-error-icon
+          @keydown.enter.prevent="handleLogin"
         />
         <q-input
           v-model="password"
@@ -73,6 +74,7 @@ const closeError = () => {
           :rules="[(val) => !!val || 'Поле обязательно']"
           lazy-rules
           no-error-icon
+          @keydown.enter.prevent="handleLogin"
         />
         <div class="flex justify-between items-center">
           <div>
