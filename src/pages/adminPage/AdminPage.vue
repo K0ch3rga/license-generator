@@ -6,33 +6,76 @@ import { ref } from 'vue'
 const table = ref<string>('users')
 
 const authoritiesColumns = ref<Column[]>([
-  { field: 'authority', name: 'authority', label: 'Authority', align: 'left' },
-  { field: 'user', name: 'user', label: 'User', align: 'left' },
-  { field: 'manager', name: 'manager', label: 'Manager', align: 'left' },
-  { field: 'developer', name: 'developer', label: 'Developer', align: 'left' },
+  {
+    field: 'role',
+    name: 'role',
+    label: 'Role',
+    align: 'left',
+  },
+  {
+    field: 'READ_LICENSE',
+    name: 'READ_LICENSE',
+    label: 'READ_LICENSE',
+    align: 'left',
+  },
+  {
+    field: 'CREATE_LICENSE',
+    name: 'CREATE_LICENSE',
+    label: 'CREATE_LICENSE',
+    align: 'left',
+  },
+  {
+    field: 'READ_REPORT',
+    name: 'READ_REPORT',
+    label: 'READ_REPORT',
+    align: 'left',
+  },
+  {
+    field: 'RETRIVE_FILE',
+    name: 'RETRIVE_FILE',
+    label: 'RETRIVE_FILE',
+    align: 'left',
+  },
 ])
 const authorities = ref([
-  { authority: 'READ_LICENSE', user: true, manager: true, developer: true },
-  { authority: 'CREATE_LICENSE', user: false, manager: true, developer: true },
-  { authority: 'READ_REPORT', user: false, manager: false, developer: true },
-  { authority: 'RETRIVE_FILE', user: false, manager: false, developer: true },
+  {
+    role: 'User',
+    READ_LICENSE: false,
+    CREATE_LICENSE: false,
+    READ_REPORT: false,
+    RETRIVE_FILE: false,
+  },
+  {
+    role: 'Manager',
+    READ_LICENSE: false,
+    CREATE_LICENSE: false,
+    READ_REPORT: false,
+    RETRIVE_FILE: false,
+  },
+  {
+    role: 'Developer',
+    READ_LICENSE: false,
+    CREATE_LICENSE: false,
+    READ_REPORT: false,
+    RETRIVE_FILE: false,
+  },
 ])
 
 const usersData = ref([
   {
     email: 'admin',
     name: 'admin',
-    role: authoritiesColumns.value[3].label,
+    role: authorities.value[2].role,
   },
   {
     email: 'oleg@example.com',
     name: 'not oleg',
-    role: authoritiesColumns.value[1].label,
+    role: authorities.value[1].role,
   },
   {
     email: 'igor@example.com',
     name: 'definetly igor',
-    role: authoritiesColumns.value[1].label,
+    role: authorities.value[1].role,
   },
 ])
 const userCoulumns = ref<Column[]>([
@@ -73,7 +116,7 @@ const roleSelectOptions = ref(['User', 'Manager', 'Developer'])
               label="Обновить"
             />
           </template>
-          <template v-slot:body-cell-authority="props">
+          <template v-slot:body-cell-role="props">
             <q-td :props="props">
               {{ props.value }}
             </q-td>
