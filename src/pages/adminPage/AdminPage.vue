@@ -1,14 +1,19 @@
 <script setup lang="ts">
+import { getAllAccesses } from '@/entities/accsses/api'
+import type { Role } from '@/entities/role'
+import { getAllRoles } from '@/entities/role/api'
+import { getAllUsers } from '@/entities/user/api/getAllUsers'
+import type { User } from '@/entities/user/User'
 import { Header } from '@/widgets/header'
 import type { Column } from '@/widgets/listLicenses/model'
-import { ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 
 const table = ref<string>('users')
 
 const authoritiesColumns = ref<Column[]>([
   {
-    field: 'role',
-    name: 'role',
+    field: 'name',
+    name: 'name',
     label: 'Role',
     align: 'left',
   },
@@ -16,66 +21,72 @@ const authoritiesColumns = ref<Column[]>([
     field: 'READ_LICENSE',
     name: 'READ_LICENSE',
     label: 'READ_LICENSE',
-    align: 'left',
+    align: 'center',
   },
   {
     field: 'CREATE_LICENSE',
     name: 'CREATE_LICENSE',
     label: 'CREATE_LICENSE',
-    align: 'left',
+    align: 'center',
   },
   {
     field: 'READ_REPORT',
     name: 'READ_REPORT',
     label: 'READ_REPORT',
-    align: 'left',
+    align: 'center',
   },
   {
     field: 'RETRIVE_FILE',
     name: 'RETRIVE_FILE',
     label: 'RETRIVE_FILE',
-    align: 'left',
+    align: 'center',
   },
 ])
-const authorities = ref([
+const authorities = ref<Role[]>([
   {
-    role: 'User',
+    id: 0,
+    name: 'User',
+    acesses: [],
     READ_LICENSE: false,
     CREATE_LICENSE: false,
+    READ_REPORT: false,
+    RETRIVE_FILE: true,
+  },
+  {
+    id: 0,
+    name: 'Manager',
+    acesses: [],
+    READ_LICENSE: true,
+    CREATE_LICENSE: true,
     READ_REPORT: false,
     RETRIVE_FILE: false,
   },
   {
-    role: 'Manager',
+    id: 0,
+    name: 'Developer',
+    acesses: [],
     READ_LICENSE: false,
-    CREATE_LICENSE: false,
+    CREATE_LICENSE: true,
     READ_REPORT: false,
-    RETRIVE_FILE: false,
-  },
-  {
-    role: 'Developer',
-    READ_LICENSE: false,
-    CREATE_LICENSE: false,
-    READ_REPORT: false,
-    RETRIVE_FILE: false,
+    RETRIVE_FILE: true,
   },
 ])
 
-const usersData = ref([
+const usersData = ref<User[]>([
   {
     email: 'admin',
     name: 'admin',
-    role: authorities.value[2].role,
+    role: authorities.value[2].name,
   },
   {
     email: 'oleg@example.com',
     name: 'not oleg',
-    role: authorities.value[1].role,
+    role: authorities.value[1].name,
   },
   {
     email: 'igor@example.com',
     name: 'definetly igor',
-    role: authorities.value[1].role,
+    role: authorities.value[1].name,
   },
 ])
 const userCoulumns = ref<Column[]>([
@@ -83,7 +94,22 @@ const userCoulumns = ref<Column[]>([
   { field: 'name', name: 'name', label: 'Name', align: 'left' },
   { field: 'role', name: 'role', label: 'Role', align: 'left' },
 ])
-const roleSelectOptions = ref(['User', 'Manager', 'Developer'])
+const roleSelectOptions = ref(authorities.value.map((v) => v.name))
+
+const toggleRoleAuth = (value: boolean, role: Role) => {
+  console.log(role)
+}
+
+const updateUserRole = (value: string, user: User) => {
+  console.log(user)
+}
+
+onBeforeMount(() => {
+  const rolesPromise = getAllRoles()
+  const acessesPromise = getAllAccesses()
+  const usersPromice = getAllUsers()
+  Promise.allSettled([rolesPromise, acessesPromise, usersPromice])
+})
 </script>
 <template>
   <Header />
@@ -116,7 +142,7 @@ const roleSelectOptions = ref(['User', 'Manager', 'Developer'])
               label="Обновить"
             />
           </template>
-          <template v-slot:body-cell-role="props">
+          <template v-slot:body-cell-name="props">
             <q-td :props="props">
               {{ props.value }}
             </q-td>
@@ -124,7 +150,8 @@ const roleSelectOptions = ref(['User', 'Manager', 'Developer'])
           <template v-slot:body-cell="props">
             <q-td :props="props">
               <q-checkbox
-                :model-value="props.value"
+                v-model="props.row[props.col.name]"
+                @update:model-value="(v) => toggleRoleAuth(v, props.row)"
                 class="checkbox"
                 size="32px"
               />
@@ -166,7 +193,8 @@ const roleSelectOptions = ref(['User', 'Manager', 'Developer'])
                 dense
                 options-dense
                 class="select text-body1"
-                :model-value="props.value"
+                v-model="props.row[props.col.name]"
+                @update:model-value="(v) => updateUserRole(v, props.row)"
                 :options="roleSelectOptions"
               />
             </q-td>
