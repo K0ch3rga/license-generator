@@ -8,8 +8,12 @@ import { Header } from '@/widgets/header'
 import type { Column } from '@/shared/model'
 import { onBeforeMount, ref } from 'vue'
 import type { SelectableRole, SelectableUser } from './model/'
+import { useQuasar } from 'quasar'
+import { CreateRole } from '@/features/createRole'
+import { CreateUser } from '@/features/createUser'
 
 const table = ref<string>('users')
+const $q = useQuasar()
 
 const authoritiesColumns = ref<Column[]>([
   {
@@ -107,6 +111,16 @@ const userCoulumns = ref<Column[]>([
 ])
 const roleSelectOptions = ref(authorities.value.map((v) => v.name))
 
+const handleCreateRolePopup = () => {
+  $q.dialog({
+    component: CreateRole,
+  }).onOk((payload) => console.log(payload))
+}
+
+const handleCreateUserPopup = () => {
+  $q.dialog({ component: CreateUser }).onOk((payload) => console.log(payload))
+}
+
 const toggleRoleAuth = (value: boolean, role: Role) => {
   console.log(role)
 }
@@ -145,6 +159,7 @@ onBeforeMount(() => {
               flat
               class="btn btn-fill text-button small q-mx-xs"
               label="Добавить"
+              @click="handleCreateRolePopup"
             />
             <q-btn
               flat
@@ -189,6 +204,7 @@ onBeforeMount(() => {
               flat
               class="btn btn-fill text-button small q-mx-xs"
               label="Добавить"
+              @click="handleCreateUserPopup"
             />
             <q-btn
               flat

@@ -2,7 +2,7 @@ import './shared/assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { Cookies, Quasar } from 'quasar'
+import { Cookies, Dialog, Quasar } from 'quasar'
 import { App } from './app'
 import { router } from './app/router'
 import quasarIconSet from 'quasar/icon-set/material-symbols-sharp'
@@ -28,6 +28,7 @@ app.use(Quasar, {
   },
   plugins: {
     Cookies,
+    Dialog,
   }, // import Quasar plugins and add here
   iconSet: quasarIconSet,
 })

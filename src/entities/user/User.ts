@@ -1,5 +1,5 @@
 export type User = {
   id: number
   username: string
-  roles: string[]
+  roles: string
 }

@@ -1,2 +1,2 @@
 export type { Role } from './Role'
-export { getAllRoles } from './api'
+export { getAllRoles, createRole } from './api'
