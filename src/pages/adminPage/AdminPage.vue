@@ -7,6 +7,7 @@ import type { User } from '@/entities/user/User'
 import { Header } from '@/widgets/header'
 import type { Column } from '@/shared/model'
 import { onBeforeMount, ref } from 'vue'
+import { showError } from '@/features/showError'
 import type { SelectableRole, SelectableUser } from './model/'
 import { useQuasar } from 'quasar'
 import { CreateRole } from '@/features/createRole'
@@ -132,8 +133,12 @@ const updateUserRole = (value: string, user: User) => {
 const handleUpdate = () => {
   const rolesPromise = getAllRoles()
   const acessesPromise = getAllAccesses()
-  const usersPromice = getAllUsers()
-  Promise.allSettled([rolesPromise, acessesPromise, usersPromice])
+  const usersPromise = getAllUsers()
+  Promise.allSettled([rolesPromise, acessesPromise, usersPromise])
+    .then((t: PromiseSettledResult<any>[]) =>
+      t.find((p) => p.status == 'rejected') ? Promise.reject(t[0]) : t
+    )
+    .catch(() => showError('something wrong'))
 }
 
 onBeforeMount(() => {

@@ -167,6 +167,19 @@ body
   border-radius: $border-radius
   border: $border-width solid var(--grey3)
 
+.q-card.error.error
+  color: var(--red)
+  background: var(--background)
+  border-radius: $border-radius
+  border: $border-width solid var(--red)
+  .q-card__section, .q-card__actions
+    padding: 6.5px 8px
+  .q-btn.q-btn
+    color: var(--grey5)
+    min-height: fit-content
+    min-width: fit-content
+    padding: 0px
+
 .q-menu
   border-radius: $border-radius !important
 .q-date.date-input
@@ -236,8 +249,8 @@ body
   &.bold
     font-weight: $M-bold-font-weight
 
-.text-body2
-  font-size: $S-font-size
+.text-body2.text-body2
+  // font-size: $S-font-size
   font-weight: $S-font-weight
   letter-spacing: $S-letter-spacing
   color: var(--color-text)
