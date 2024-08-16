@@ -12,6 +12,8 @@ import { useQuasar } from 'quasar'
 import { CreateRole } from '@/features/createRole'
 import { CreateUser } from '@/features/createUser'
 import { RoleAssignmentList } from '@/widgets/roleAssignmentList'
+import { ErrorCodes } from './model'
+import { ErrorDescription } from './model/errorCodes'
 
 const table = ref<'users' | 'roles'>('users')
 const $q = useQuasar()
@@ -92,11 +94,13 @@ const handleUpdate = () => {
   const rolesPromise = getAllRoles()
   const acessesPromise = getAllAccesses()
   const usersPromise = getAllUsers()
-  Promise.allSettled([rolesPromise, acessesPromise, usersPromise])
-    .then((t: PromiseSettledResult<any>[]) =>
-      t.find((p) => p.status == 'rejected') ? Promise.reject(t[0]) : t
-    )
-    .catch(() => showError('Не получилось обновить'))
+  Promise.all([rolesPromise, acessesPromise, usersPromise])
+    .then((r) => {
+      console.log(r[0])
+      console.log(r[1])
+      console.log(r[2])
+    })
+    .catch((r) => showError(ErrorDescription(r) ?? 'Сервер не доступен'))
 }
 
 const handleDeleteRole = (role: Role[]) => {
