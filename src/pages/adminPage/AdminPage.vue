@@ -8,109 +8,75 @@ import { Header } from '@/widgets/header'
 import type { Column } from '@/shared/model'
 import { onBeforeMount, ref } from 'vue'
 import { showError } from '@/features/showError'
-import type { SelectableRole, SelectableUser } from './model/'
 import { useQuasar } from 'quasar'
 import { CreateRole } from '@/features/createRole'
 import { CreateUser } from '@/features/createUser'
+import { RoleAssignmentList } from '@/widgets/roleAssignmentList'
 
-const table = ref<string>('users')
+const table = ref<'users' | 'roles'>('users')
 const $q = useQuasar()
 
 const authoritiesColumns = ref<Column[]>([
   {
-    field: 'selected',
-    name: 'selected',
-    label: '',
-  },
-  {
     field: 'name',
     name: 'name',
-    label: 'Role',
+    label: 'Роль',
     align: 'left',
   },
   {
-    field: 'READ_LICENSE',
-    name: 'READ_LICENSE',
-    label: 'READ_LICENSE',
-    align: 'center',
-  },
-  {
-    field: 'CREATE_LICENSE',
-    name: 'CREATE_LICENSE',
-    label: 'CREATE_LICENSE',
-    align: 'center',
-  },
-  {
-    field: 'READ_REPORT',
-    name: 'READ_REPORT',
-    label: 'READ_REPORT',
-    align: 'center',
-  },
-  {
-    field: 'RETRIVE_FILE',
-    name: 'RETRIVE_FILE',
-    label: 'RETRIVE_FILE',
-    align: 'center',
+    field: 'accesses',
+    name: 'accesses',
+    label: 'Доступы',
+    align: 'left',
   },
 ])
-const authorities = ref<SelectableRole[]>(
-  [
-    {
-      id: 0,
-      name: 'User',
-      acesses: [],
-      READ_LICENSE: false,
-      CREATE_LICENSE: false,
-      READ_REPORT: false,
-      RETRIVE_FILE: true,
-    },
-    {
-      id: 0,
-      name: 'Manager',
-      acesses: [],
-      READ_LICENSE: true,
-      CREATE_LICENSE: true,
-      READ_REPORT: false,
-      RETRIVE_FILE: false,
-    },
-    {
-      id: 0,
-      name: 'Developer',
-      acesses: [],
-      READ_LICENSE: false,
-      CREATE_LICENSE: true,
-      READ_REPORT: false,
-      RETRIVE_FILE: true,
-    },
-  ].map((r) => ({ selected: false, ...r }))
-)
+const authorities = ref<Role[]>([
+  {
+    id: 0,
+    name: 'User',
+    acesses: ['READ_LICENSE'],
+  },
+  {
+    id: 1,
+    name: 'Manager',
+    acesses: [],
+  },
+  {
+    id: 2,
+    name: 'Developer',
+    acesses: ['READ_LICENSE', 'CREATE_LICENSE', 'READ_REPORT'],
+  },
+])
 
-const usersData = ref<SelectableUser[]>(
-  [
-    {
-      email: 'admin',
-      name: 'admin',
-      role: authorities.value[2].name,
-    },
-    {
-      email: 'oleg@example.com',
-      name: 'not oleg',
-      role: authorities.value[1].name,
-    },
-    {
-      email: 'igor@example.com',
-      name: 'definetly igor',
-      role: authorities.value[1].name,
-    },
-  ].map((u) => ({ selected: false, ...u }) as unknown as SelectableUser)
-)
-const userCoulumns = ref<Column[]>([
-  { field: 'selected', name: 'selected', label: '' },
-  { field: 'email', name: 'email', label: 'Email', align: 'left' },
-  { field: 'name', name: 'name', label: 'Name', align: 'left' },
-  { field: 'role', name: 'role', label: 'Role', align: 'left' },
+const usersData = ref<User[]>([
+  {
+    id: 0,
+    username: 'admin',
+    roles: [authorities.value[2].name],
+  },
+  {
+    id: 1,
+    username: 'oleg@example.com',
+    roles: [authorities.value[1].name],
+  },
+  {
+    id: 2,
+    username: 'igor@example.com',
+    roles: [authorities.value[1].name, authorities.value[0].name],
+  },
 ])
-const roleSelectOptions = ref(authorities.value.map((v) => v.name))
+const userCoulumns = ref<Column[]>([
+  { field: 'username', name: 'name', label: 'Email', align: 'left' },
+  { field: 'roles', name: 'roles', label: 'Роли', align: 'left' },
+])
+
+const roleSelectOptions = authorities.value.map((v) => v.name)
+const authoritiesSelectOptions = [
+  'READ_LICENSE',
+  'CREATE_LICENSE',
+  'READ_REPORT',
+  'RETRIVE_FILE',
+]
 
 const handleCreateRolePopup = () => {
   $q.dialog({
@@ -122,14 +88,6 @@ const handleCreateUserPopup = () => {
   $q.dialog({ component: CreateUser }).onOk((payload) => console.log(payload))
 }
 
-const toggleRoleAuth = (value: boolean, role: Role) => {
-  console.log(role)
-}
-
-const updateUserRole = (value: string, user: User) => {
-  console.log(user)
-}
-
 const handleUpdate = () => {
   const rolesPromise = getAllRoles()
   const acessesPromise = getAllAccesses()
@@ -138,9 +96,15 @@ const handleUpdate = () => {
     .then((t: PromiseSettledResult<any>[]) =>
       t.find((p) => p.status == 'rejected') ? Promise.reject(t[0]) : t
     )
-    .catch(() => showError('something wrong'))
+    .catch(() => showError('Не получилось обновить'))
 }
 
+const handleDeleteRole = (role: Role[]) => {
+  console.log(role)
+}
+const handleDeleteUser = (user: User[]) => {
+  console.log(user)
+}
 onBeforeMount(() => {
   handleUpdate()
 })
@@ -150,104 +114,24 @@ onBeforeMount(() => {
   <q-page-container>
     <q-page>
       <div class="padded q-mr-md">
-        <q-table
-          class="text-body1"
-          v-if="table == 'roles'"
-          flat
-          hide-bottom
-          :columns="authoritiesColumns"
-          :rows="authorities"
-        >
-          <template v-slot:top>
-            <q-space />
-            <q-btn
-              flat
-              class="btn btn-fill text-button small q-mx-xs"
-              label="Добавить"
-              @click="handleCreateRolePopup"
-            />
-            <q-btn
-              flat
-              class="btn btn-fill text-button small q-mx-xs"
-              label="Удалить"
-            />
-            <q-btn
-              flat
-              class="btn btn-fill text-button small q-mx-xs"
-              label="Обновить"
-              @click="handleUpdate"
-            />
-          </template>
-          <template v-slot:body-cell-name="props">
-            <q-td :props="props">
-              {{ props.value }}
-            </q-td>
-          </template>
-          <template v-slot:body-cell="props">
-            <q-td :props="props">
-              <q-checkbox
-                v-model="props.row[props.col.name]"
-                @update:model-value="(v) => toggleRoleAuth(v, props.row)"
-                class="checkbox"
-                size="32px"
-              />
-            </q-td>
-          </template>
-        </q-table>
-
-        <q-table
-          class="text-body1 q-pb-xs"
+        <RoleAssignmentList
           v-if="table == 'users'"
-          flat
-          hide-bottom
           :columns="userCoulumns"
           :rows="usersData"
-        >
-          <template v-slot:top>
-            <q-space />
-            <q-btn
-              flat
-              class="btn btn-fill text-button small q-mx-xs"
-              label="Добавить"
-              @click="handleCreateUserPopup"
-            />
-            <q-btn
-              flat
-              class="btn btn-fill text-button small q-mx-xs"
-              label="Удалить"
-            />
-            <q-btn
-              flat
-              class="btn btn-fill text-button small q-mx-xs"
-              label="Обновить"
-              @click="handleUpdate"
-            />
-          </template>
-          <template v-slot:body-cell-selected="props">
-            <q-td :props="props">
-              <q-checkbox
-                v-model="props.row[props.col.name]"
-                @update:model-value="(v) => toggleRoleAuth(v, props.row)"
-                class="checkbox"
-                size="32px"
-              />
-            </q-td>
-          </template>
-          <template v-slot:body-cell-role="props">
-            <q-td :props="props">
-              <q-select
-                outlined
-                rounded
-                dense
-                options-dense
-                class="select text-body1"
-                v-model="props.row[props.col.name]"
-                @update:model-value="(v) => updateUserRole(v, props.row)"
-                :options="roleSelectOptions"
-              />
-            </q-td>
-          </template>
-        </q-table>
+          :options="roleSelectOptions"
+          @-add="handleCreateUserPopup"
+          @-update="handleUpdate"
+          @-delete="handleDeleteUser"
+        />
+        <RoleAssignmentList
+          v-if="table == 'roles'"
+          :columns="authoritiesColumns"
+          :rows="authorities"
+          :options="authoritiesSelectOptions"
+          @-add="handleCreateRolePopup"
+          @-update="handleUpdate"
+          @-delete="handleDeleteRole"
+        />
       </div>
       <q-page-sticky expand position="left">
         <div class="fit q-pt-xl q-px-sm column">

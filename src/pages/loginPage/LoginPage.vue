@@ -43,7 +43,7 @@ const closeError = () => {
         <q-chip
           outline
           :label="error"
-          class="q-my-md error-label self-stretch"
+          class="q-my-md error-label self-stretch error"
           :class="{ 'hidden-chip': !error }"
           :ripple="false"
           icon="svguse:src/shared/assets/block.svg#block"

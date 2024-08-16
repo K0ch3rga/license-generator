@@ -8,6 +8,7 @@ if (theme) $q.dark.set(theme == 'dark')
 else $q.dark.set('auto')
 
 $q.iconSet.table.arrowUp = 'sym_s_arrow_drop_down'
+$q.iconSet.arrow.dropdown = 'sym_s_keyboard_arrow_down'
 </script>
 
 <template>
