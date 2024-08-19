@@ -19,11 +19,15 @@ const handleLogin = async () => {
   loading.value = true
   getToken(login.value, password.value)
     .then((t) => {
+      const userInfo = decodeJwt<UserInfo>(t.access_token)
+      if (userInfo == undefined) Promise.reject(500)
+
       const time = new Date().getTime() + 7200000 // 2h
       Cookies.set('session', t.access_token, {
         expires: new Date(time).toUTCString(),
       })
-      user.setUser(decodeJwt<UserInfo>(t.access_token).username)
+
+      user.setUser(userInfo.username)
       console.log(decodeJwt<UserInfo>(t.access_token))
       routes.replace({ name: 'main' })
     })
