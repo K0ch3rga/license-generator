@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
+import { onMounted } from 'vue'
 
-const $q = useQuasar()
+onMounted(() => {
+  const $q = useQuasar()
 
-const theme = $q.cookies.get('theme')
-if (theme) $q.dark.set(theme == 'dark')
-else $q.dark.set('auto')
+  const theme = $q.cookies.get('theme')
+  if (theme) $q.dark.set(theme == 'dark')
 
-$q.iconSet.table.arrowUp = 'sym_s_arrow_drop_down'
+  $q.iconSet.table.arrowUp = 'sym_s_arrow_drop_down'
+})
 </script>
 
 <template>

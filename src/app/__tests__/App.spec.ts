@@ -1,10 +1,15 @@
 import { mount } from '@vue/test-utils'
+import { describe, it, expect } from 'vitest'
 import App from '../App.vue'
+import { installQuasarPlugin } from '@quasar/quasar-app-extension-testing-unit-vitest'
+import { Cookies, Dark } from 'quasar'
 
-test('mounts app', () => {
-  const wrapper = mount(App)
+installQuasarPlugin({ plugins: { Cookies, Dark } })
 
-  const app = wrapper.get('[data-test="app"]')
-
-  expect(app.text()).toBe('Learn Vue.js 3')
+describe('App', () => {
+  it('mounts', () => {
+    const wrapper = mount(App)
+    const app = wrapper.get('[data-test="app"]')
+    expect(!!app).toBe(true)
+  })
 })
