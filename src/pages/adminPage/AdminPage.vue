@@ -12,7 +12,6 @@ import { useQuasar } from 'quasar'
 import { CreateRole } from '@/features/createRole'
 import { CreateUser } from '@/features/createUser'
 import { RoleAssignmentList } from '@/widgets/roleAssignmentList'
-import { ErrorCodes } from './model'
 import { ErrorDescription } from './model/errorCodes'
 
 const table = ref<'users' | 'roles'>('users')
