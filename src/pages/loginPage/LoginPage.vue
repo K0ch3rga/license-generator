@@ -20,7 +20,7 @@ const handleLogin = async () => {
   getToken(login.value, password.value)
     .then((t) => {
       const userInfo = decodeJwt<UserInfo>(t.access_token)
-      if (userInfo == undefined) Promise.reject(500)
+      if (!userInfo) Promise.reject(500)
 
       const time = new Date().getTime() + 7200000 // 2h
       Cookies.set('session', t.access_token, {
