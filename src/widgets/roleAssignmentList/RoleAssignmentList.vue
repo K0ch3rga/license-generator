@@ -11,10 +11,11 @@ const props = defineProps<{
 }>()
 const emits = defineEmits<{ add: []; delete: [Role[] | User[]]; update: [] }>()
 const selected = ref<Role[] | User[]>([])
+const pagination = ref({ rowsPerPage: 0 })
 </script>
 <template>
   <q-table
-    class="text-body1"
+    class="text-body1 max-height"
     flat
     hide-bottom
     :columns="columns"
@@ -22,6 +23,9 @@ const selected = ref<Role[] | User[]>([])
     row-key="id"
     selection="single"
     v-model:selected="selected"
+    virtual-scroll
+    v-model:pagination="pagination"
+    :rows-per-page-options="[0]"
   >
     <template v-slot:top>
       <q-space />
@@ -72,4 +76,7 @@ const selected = ref<Role[] | User[]>([])
 <style scoped lang="sass">
 .small-name-col
   width:1px
+
+.max-height
+  height: calc( 100vh - 98px )
 </style>

@@ -5,7 +5,10 @@ import { Cookies } from 'quasar'
 export const createUser = async (user: NewUserDTO) =>
   await fetch(BACKEND_CONNECTION + 'users', {
     method: 'POST',
-    headers: { Authorization: 'Bearer ' + Cookies.get('session') },
+    headers: {
+      Authorization: 'Bearer ' + Cookies.get('session'),
+      'Content-Type': ' application/json',
+    },
     body: JSON.stringify(user),
   })
     .then((r) => (r.ok ? r : Promise.reject(r.status)))

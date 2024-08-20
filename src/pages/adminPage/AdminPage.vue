@@ -17,7 +17,8 @@ import { ErrorDescription } from './model/errorCodes'
 const table = ref<'users' | 'roles'>('users')
 const $q = useQuasar()
 
-const authoritiesColumns = ref<Column[]>([
+const roles = ref<Role[]>([])
+const rolesColumns = ref<Column[]>([
   {
     field: 'name',
     name: 'name',
@@ -31,62 +32,31 @@ const authoritiesColumns = ref<Column[]>([
     align: 'left',
   },
 ])
-const authorities = ref<Role[]>([
-  {
-    id: 0,
-    name: 'User',
-    acesses: ['READ_LICENSE'],
-  },
-  {
-    id: 1,
-    name: 'Manager',
-    acesses: [],
-  },
-  {
-    id: 2,
-    name: 'Developer',
-    acesses: ['READ_LICENSE', 'CREATE_LICENSE', 'READ_REPORT'],
-  },
-])
 
-const usersData = ref<User[]>([
-  {
-    id: 0,
-    username: 'admin',
-    roles: [authorities.value[2].name],
-  },
-  {
-    id: 1,
-    username: 'oleg@example.com',
-    roles: [authorities.value[1].name],
-  },
-  {
-    id: 2,
-    username: 'igor@example.com',
-    roles: [authorities.value[1].name, authorities.value[0].name],
-  },
-])
+const usersData = ref<User[]>([])
 const userCoulumns = ref<Column[]>([
   { field: 'username', name: 'name', label: 'Email', align: 'left' },
   { field: 'roles', name: 'roles', label: 'Роли', align: 'left' },
 ])
 
-const roleSelectOptions = authorities.value.map((v) => v.name)
-const authoritiesSelectOptions = [
-  'READ_LICENSE',
-  'CREATE_LICENSE',
-  'READ_REPORT',
-  'RETRIVE_FILE',
-]
+const roleSelectOptions = ref<string[]>(roles.value.map((v) => v.name))
+const authoritiesSelectOptions = ref<string[]>([])
 
 const handleCreateRolePopup = () => {
   $q.dialog({
     component: CreateRole,
-  }).onOk((payload) => console.log(payload))
+  }).onOk((payload: Promise<Role>) => {
+    payload.then((r) => {
+      roles.value = roles.value.concat(r)
+      roleSelectOptions.value = roles.value.map((v) => v.name)
+    })
+  })
 }
 
 const handleCreateUserPopup = () => {
-  $q.dialog({ component: CreateUser }).onOk((payload) => console.log(payload))
+  $q.dialog({ component: CreateUser }).onOk((payload: Promise<User>) =>
+    payload.then((u) => (usersData.value = usersData.value.concat(u)))
+  )
 }
 
 const handleUpdate = () => {
@@ -95,11 +65,12 @@ const handleUpdate = () => {
   const usersPromise = getAllUsers()
   Promise.all([rolesPromise, acessesPromise, usersPromise])
     .then((r) => {
-      console.log(r[0])
-      console.log(r[1])
-      console.log(r[2])
+      roles.value = r[0]
+      authoritiesSelectOptions.value = r[1].map((v) => v.name)
+      usersData.value = r[2]
     })
     .catch((r) => showError(ErrorDescription(r) ?? 'Сервер не доступен'))
+  roleSelectOptions.value = roles.value.map((v) => v.name)
 }
 
 const handleDeleteRole = (role: Role[]) => {
@@ -124,16 +95,16 @@ onBeforeMount(() => {
           :options="roleSelectOptions"
           @-add="handleCreateUserPopup"
           @-update="handleUpdate"
-          @-delete="handleDeleteUser"
+          @delete="handleDeleteUser"
         />
         <RoleAssignmentList
           v-if="table == 'roles'"
-          :columns="authoritiesColumns"
-          :rows="authorities"
+          :columns="rolesColumns"
+          :rows="roles"
           :options="authoritiesSelectOptions"
           @-add="handleCreateRolePopup"
           @-update="handleUpdate"
-          @-delete="handleDeleteRole"
+          @delete="handleDeleteRole"
         />
       </div>
       <q-page-sticky expand position="left">
