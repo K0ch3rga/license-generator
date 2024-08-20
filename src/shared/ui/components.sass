@@ -181,10 +181,13 @@ body
     word-break: inherit
     white-space: pre
 
-.q-card.popup
+.q-card
   background: var(--background)
   border-radius: $border-radius
   border: $border-width solid var(--grey3)
+  &.popup
+  &.card
+    background: transparent
 
 .q-card.error.error
   color: var(--red)
@@ -259,6 +262,22 @@ body
   padding-left: 12px
   min-height: 12px
 
+.q-tabs
+  .menu-item.q-tab--active
+    color: var(--blue1) 
+  .q-tab__label
+    font-size: inherit
+    line-height: inherit
+    font-weight: inherit
+  .q-tab__indicator
+    display: none
+
+.q-tab-panels.q-tab-panels
+    background: transparent
+
+.q-separator
+  background: transparent
+
 .text-h1.text-h1
   font: $h1-font-size $font-family  
   font-weight: $h1-font-weight
@@ -289,7 +308,7 @@ body
     font-weight: $M-bold-font-weight
 
 .text-body2.text-body2
-  // font-size: $S-font-size
+  font-size: $S-font-size
   font-weight: $S-font-weight
   letter-spacing: $S-letter-spacing
   line-height: 1em

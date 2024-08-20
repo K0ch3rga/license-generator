@@ -14,8 +14,8 @@ import { CreateUser } from '@/features/createUser'
 import { RoleAssignmentList } from '@/widgets/roleAssignmentList'
 import { ErrorDescription } from './model/errorCodes'
 
-const table = ref<'users' | 'roles'>('users')
 const $q = useQuasar()
+const tab = ref<'users' | 'roles'>('users')
 
 const roles = ref<Role[]>([])
 const rolesColumns = ref<Column[]>([
@@ -87,55 +87,49 @@ onBeforeMount(() => {
   <Header />
   <q-page-container>
     <q-page>
-      <div class="padded q-mr-md">
-        <RoleAssignmentList
-          v-if="table == 'users'"
-          :columns="userCoulumns"
-          :rows="usersData"
-          :options="roleSelectOptions"
-          @-add="handleCreateUserPopup"
-          @-update="handleUpdate"
-          @delete="handleDeleteUser"
-        />
-        <RoleAssignmentList
-          v-if="table == 'roles'"
-          :columns="rolesColumns"
-          :rows="roles"
-          :options="authoritiesSelectOptions"
-          @-add="handleCreateRolePopup"
-          @-update="handleUpdate"
-          @delete="handleDeleteRole"
-        />
-      </div>
-      <q-page-sticky expand position="left">
-        <div class="fit q-pt-xl q-px-sm column">
-          <q-btn
-            flat
+      <q-card flat class="padded q-mx-md q-mb-md card">
+        <q-tabs align="left" narrow-indicator dense v-model="tab">
+          <q-tab
             :ripple="false"
-            align="left"
             class="menu-item text-body1"
-            :class="table == 'users' ? 'active' : ''"
-            @click="() => (table = 'users')"
-            >Пользователи
-          </q-btn>
-          <q-btn
-            flat
+            name="users"
+            label="Пользователи"
+          />
+          <q-tab
             :ripple="false"
-            align="left"
             class="menu-item text-body1"
-            :class="table == 'roles' ? 'active' : ''"
-            @click="() => (table = 'roles')"
-            >Роли
-          </q-btn>
-        </div>
-      </q-page-sticky>
+            name="roles"
+            label="Роли"
+          />
+        </q-tabs>
+        <q-separator />
+        <q-tab-panels v-model="tab" keep-alive>
+          <q-tab-panel name="users">
+            <RoleAssignmentList
+              :columns="userCoulumns"
+              :rows="usersData"
+              :options="roleSelectOptions"
+              @-add="handleCreateUserPopup"
+              @-update="handleUpdate"
+              @delete="handleDeleteUser"
+            />
+          </q-tab-panel>
+          <q-tab-panel name="roles">
+            <RoleAssignmentList
+              :columns="rolesColumns"
+              :rows="roles"
+              :options="authoritiesSelectOptions"
+              @-add="handleCreateRolePopup"
+              @-update="handleUpdate"
+              @delete="handleDeleteRole"
+            />
+          </q-tab-panel>
+        </q-tab-panels>
+      </q-card>
     </q-page>
   </q-page-container>
 </template>
 <style scoped lang="sass">
-.padded
-  padding-left: 168px
-
 .menu-item
   border-radius: 8px
   &.active

@@ -78,5 +78,5 @@ const pagination = ref({ rowsPerPage: 0 })
   width:1px
 
 .max-height
-  height: calc( 100vh - 98px )
+  height: calc( 100vh - 98px - 36px - 16px - 32px) // full - header - tabs - bottom margin - tab panel padding
 </style>
