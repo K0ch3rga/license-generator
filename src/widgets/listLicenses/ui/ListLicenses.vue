@@ -9,29 +9,34 @@ import { exportTable } from '../model'
 import { type Column } from '@/shared/model'
 import { onMounted, ref } from 'vue'
 import { exportFile, date } from 'quasar'
+import { useUserStore } from '@/entities/user'
+import { showError } from '@/features/showError'
 
 const licenses = ref<License[]>([])
-const error = ref('')
 const loading = ref(false)
 const filter = ref('')
 const pagination = ref({ rowsPerPage: 0 })
+const user = useUserStore()
 
 const refreshLicenses = () => {
+  if (!user.canListLicense) return
   loading.value = true
   getAllLicenses()
     .then((l) => (licenses.value = l))
-    .catch((e) => (error.value = e))
+    .catch((e) => showError(e))
     .finally(() => (loading.value = false))
 }
 onMounted(refreshLicenses)
 
 const downloadLicenseFile = (id: string) => {
+  if (!user.canDownloadFile) return
   getLicenseFile(id).then((r) =>
     exportFile(r.filename ?? 'license file', r.blob)
   )
 }
 
 const downloadDigestFile = (id: string) => {
+  if (!user.canDownloadFile) return
   getDigestFile(id).then((r) => exportFile(r.filename ?? 'digest file', r.blob))
 }
 
@@ -96,13 +101,13 @@ const columns: Column[] = [
   <q-table
     class="q-mx-md max-height-table text-body1"
     flat
-    hide-bottom
     binary-state-sort
     :rows="licenses"
     row-key="licenseNumber"
     :columns="columns"
     :filter="filter"
     :loading="loading"
+    :hide-bottom="user.canListLicense"
     virtual-scroll
     v-model:pagination="pagination"
     :rows-per-page-options="[0]"
@@ -117,7 +122,7 @@ const columns: Column[] = [
         @click="() => exportTable(licenses, columns)"
       />
     </template>
-    <template v-slot:body-cell-licenseFile="props">
+    <template v-slot:body-cell-licenseFile="props" v-if="user.canDownloadFile">
       <q-td
         key="licenseFile"
         :props="props"
@@ -127,7 +132,15 @@ const columns: Column[] = [
         {{ props.value }}
       </q-td>
     </template>
-    <template v-slot:body-cell-digest="props">
+    <template
+      v-slot:body-cell-licenseFile="props"
+      v-else-if="!user.canDownloadFile"
+    >
+      <q-td key="licenseFile" :props="props">
+        {{ props.value }}
+      </q-td>
+    </template>
+    <template v-slot:body-cell-digest="props" v-if="user.canDownloadFile">
       <q-td
         key="digest"
         :props="props"
@@ -137,15 +150,19 @@ const columns: Column[] = [
         {{ props.value }}
       </q-td>
     </template>
-
-    <!-- <template v-slot:header-cell="props">
-      <q-th :props="props"> </q-th>
-    </template> -->
+    <template v-slot:body-cell-digest="props" v-else-if="!user.canDownloadFile">
+      <q-td key="digest" :props="props">
+        {{ props.value }}
+      </q-td>
+    </template>
+    <template v-slot:bottom-row v-if="!user.canListLicense">
+      <div class="text-h3">Недостаточно прав для просмотра лицензий</div>
+    </template>
   </q-table>
 </template>
 <style lang="sass">
 .max-height-table
-  height: calc( 100vh - 98px - 24px )
+  height: calc( 100vh - 98px - 24px ) // full - header - search bar
 
 .pressable
   cursor: pointer

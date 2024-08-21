@@ -2,6 +2,7 @@
 import { generateLicense, type LicenseInfo } from '@/entities/license'
 import { exportFile, date, type QFile } from 'quasar'
 import { ref, type Ref } from 'vue'
+import { getErrorByCode, showError } from '../showError'
 const popupVisible = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const file = ref<File>()
@@ -21,12 +22,23 @@ const handlePopupToggle = () => {
 
 const handleSubmit = async () => {
   loading.value = true
-  const downloadedFile = await generateLicense(file.value, {
+  generateLicense(file.value, {
     company_name: company.value,
     product_name: product.value,
     license_users_count: userCount.value,
-    exp_time: expirationDate.value,
+    exp_time: date.formatDate(
+      date.extractDate(expirationDate.value, 'D.M.YYYY'),
+      'DD-MM-YYYY'
+    ),
   } as LicenseInfo)
+    .then((downloadedFile) => {
+      emits('AddLicense')
+      exportFile(
+        downloadedFile.filename ?? 'license file.txt',
+        downloadedFile.blob
+      )
+    })
+    .catch((e) => showError(getErrorByCode(e)))
 
   popupVisible.value = false
   file.value = undefined
@@ -37,9 +49,6 @@ const handleSubmit = async () => {
     date.addToDate(new Date(), { months: 1 }),
     'D.M.YYYY'
   )
-
-  emits('AddLicense')
-  exportFile(downloadedFile.filename ?? 'license file', downloadedFile.blob)
 }
 
 const ruLocale = {

@@ -23,7 +23,7 @@ const handleLogin = async () => {
       Cookies.set('session', t.access_token, {
         expires: new Date(time).toUTCString(),
       })
-      user.setUser(decodeJwt<UserInfo>(t.access_token).username)
+      user.setUserFromJWT(decodeJwt<UserInfo>(t.access_token))
       console.log(decodeJwt<UserInfo>(t.access_token))
       routes.replace({ name: 'main' })
     })

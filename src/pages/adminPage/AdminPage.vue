@@ -7,12 +7,11 @@ import type { User } from '@/entities/user/User'
 import { Header } from '@/widgets/header'
 import type { Column } from '@/shared/model'
 import { onBeforeMount, ref } from 'vue'
-import { showError } from '@/features/showError'
+import { getErrorByCode, showError } from '@/features/showError'
 import { useQuasar } from 'quasar'
 import { CreateRole } from '@/features/createRole'
 import { CreateUser } from '@/features/createUser'
 import { RoleAssignmentList } from '@/widgets/roleAssignmentList'
-import { ErrorDescription } from './model/errorCodes'
 
 const $q = useQuasar()
 const tab = ref<'users' | 'roles'>('users')
@@ -63,14 +62,16 @@ const handleUpdate = () => {
   const rolesPromise = getAllRoles()
   const acessesPromise = getAllAccesses()
   const usersPromise = getAllUsers()
+
+  console.log(rolesPromise)
   Promise.all([rolesPromise, acessesPromise, usersPromise])
     .then((r) => {
       roles.value = r[0]
       authoritiesSelectOptions.value = r[1].map((v) => v.name)
       usersData.value = r[2]
+      roleSelectOptions.value = roles.value.map((v) => v.name)
     })
-    .catch((r) => showError(ErrorDescription(r) ?? 'Сервер не доступен'))
-  roleSelectOptions.value = roles.value.map((v) => v.name)
+    .catch((r) => showError(getErrorByCode(r)))
 }
 
 const handleDeleteRole = (role: Role[]) => {

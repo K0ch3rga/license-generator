@@ -1,1 +1,1 @@
-export { showError } from './showError'
+export { showError, getErrorByCode } from './showError'

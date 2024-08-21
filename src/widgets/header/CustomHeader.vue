@@ -35,7 +35,7 @@ const navigateMain = () => {
       </div>
       <GenerateLicense
         @add-license="emits('licenseGenerated')"
-        v-if="user.isLogged"
+        v-if="user.isLogged && user.canCreateLicense"
       />
       <q-space />
       <q-btn-toggle
@@ -65,7 +65,7 @@ const navigateMain = () => {
         :ripple="false"
       />
       <q-btn
-        v-if="user.isLogged"
+        v-if="user.isLogged && user.canManageUsersAndRoles"
         flat
         class="btn btn-link q-mr-md"
         icon="svguse:src/shared/assets/gear.svg#gear| 0 0 16 16"
@@ -86,8 +86,6 @@ const navigateMain = () => {
 <style scoped lang="sass">
 .q-toolbar__title
   flex: 0 1 min-content
-div.grow
-  flex: 1 1 min-content
 
 .clickable-title
   cursor: pointer

@@ -26,10 +26,11 @@ export const getAllLicenses = async (): Promise<License[]> =>
     .catch((e) => Promise.reject(e))
 
 export const getErrorByCode = (code: number) =>
-  getAllCodes.get(code) ?? 'Сервер не отвечает'
+  errorCodes.get(code) ?? 'Сервер не отвечает'
 
-const getAllCodes = new Map<number, string>()
-getAllCodes.set(401, 'Вы не авторизованы')
+const errorCodes = new Map<number, string>()
+errorCodes.set(401, 'Вы не авторизованы')
+errorCodes.set(403, 'Недостаточно прав')
 
 type LicenseDto = {
   company_name: string
