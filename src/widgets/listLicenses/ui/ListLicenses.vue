@@ -31,13 +31,15 @@ onMounted(refreshLicenses)
 const downloadLicenseFile = (id: string) => {
   if (!user.canDownloadFile) return
   getLicenseFile(id).then((r) =>
-    exportFile(r.filename ?? 'license file', r.blob)
+    exportFile(r.filename ?? 'license file.txt', r.blob)
   )
 }
 
 const downloadDigestFile = (id: string) => {
   if (!user.canDownloadFile) return
-  getDigestFile(id).then((r) => exportFile(r.filename ?? 'digest file', r.blob))
+  getDigestFile(id).then((r) =>
+    exportFile(r.filename ?? 'digest file.txt', r.blob)
+  )
 }
 
 const columns: Column[] = [
