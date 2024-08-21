@@ -8,8 +8,15 @@ const props = defineProps<{
   columns: Column[]
   rows: Role[] | User[]
   options: string[]
+  type: typeof Role
 }>()
-const emits = defineEmits<{ add: []; delete: [Role[] | User[]]; update: [] }>()
+const emits = defineEmits<{
+  add: []
+  delete: [Role[] | User[]]
+  update: []
+  removeRole: [Role | User, string]
+  addRole: [Role | User, string]
+}>()
 const selected = ref<Role[] | User[]>([])
 const pagination = ref({ rowsPerPage: 0 })
 </script>
@@ -61,6 +68,8 @@ const pagination = ref({ rowsPerPage: 0 })
         <q-select
           :options="props.options"
           v-model="cellProps.row[cellProps.col.name]"
+          @add="(role) => emits('addRole', cellProps.row, role.value)"
+          @remove="(role) => emits('removeRole', cellProps.row, role.value)"
           multiple
           rounded
           outlined

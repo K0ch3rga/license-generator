@@ -2,7 +2,7 @@ import { BACKEND_CONNECTION } from '@/shared/config'
 import { Cookies } from 'quasar'
 
 export const getLicenseFile = async (id: string) =>
-  await fetch(BACKEND_CONNECTION + 'license_file/' + id, {
+  await fetch(BACKEND_CONNECTION + 'license/' + id, {
     headers: {
       Authorization: 'Bearer ' + Cookies.get('session'),
     },
