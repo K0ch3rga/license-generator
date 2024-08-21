@@ -1,6 +1,5 @@
 @import theme-colors
 @import uikit-variables
-
 .text-input.text-input
   border-radius: $border-radius
   .q-field__control
@@ -108,8 +107,28 @@
     
     .q-field__native
       min-height: inherit
+      line-height: inherit
+    .q-icon
+      font-size: 1em
   .q-field__marginal
     height: 24px
+
+.q-menu.q-menu
+  border: $border-width solid var(--grey3)
+  border-radius: calc(#{$border-radius} / 2) !important
+  box-shadow: none
+  padding: 2px
+  background-color: var(--background)
+  .q-item
+    border-radius: 3px
+    padding: 4px 6px
+    min-height: calc(4*2px + 1em)
+    &[aria-selected=true]
+      &.q-item--active
+        color: var(--color-text)
+        font-weight: bolder
+      .q-item__label:after
+        content: ' ✓'
 
 .q-checkbox.checkbox
   .q-checkbox__bg
@@ -124,7 +143,7 @@ body
   &.body--dark.body--dark
     background: var(--background)
 
-.q-chip.q-chip
+.q-chip.q-chip.error
   height: 24px
   width: 242px
   margin-right: 0
@@ -162,16 +181,35 @@ body
     word-break: inherit
     white-space: pre
 
-.q-card.popup
+.q-card
   background: var(--background)
   border-radius: $border-radius
   border: $border-width solid var(--grey3)
+  &.popup
+  &.card
+    background: transparent
 
-.q-menu
-  border-radius: $border-radius !important
-.q-date.date-input
+.q-card.error.error
+  color: var(--red)
+  background: var(--background)
   border-radius: $border-radius
-  border: $border-width solid var(--grey3)
+  border: $border-width solid var(--red)
+  .q-card__section, .q-card__actions
+    padding: 6.5px 8px
+    display: flex
+    align-items: center
+  .q-btn.q-btn
+    color: var(--grey5)
+    min-height: fit-content
+    min-width: fit-content
+    padding: 0px
+
+.q-menu:has(.q-date)
+  border-radius: $border-radius !important
+  padding: 0
+  .q-date.date-input
+    border-radius: $border-radius
+    border: $border-width solid var(--grey3)
 
 @supports selector(::-webkit-scrollbar)
   ::-webkit-scrollbar
@@ -202,10 +240,43 @@ body
     font-variation-settings: 'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 48
   .q-table td
     border-color: var(--grey2)
+    &:before
+      background: var(--blue2)
+      z-index: -1
+    
+
+  .q-checkbox
+    height: 14px
+    width: 14px
+    align-items: start
+    .q-checkbox__bg
+      border-radius: calc( #{$border-radius} / 2 )
+      height: 14px
+      width: 14px
+    .q-checkbox__inner 
+      font-size: 0
+    .q-checkbox__inner--truthy
+      color: var(--blue1) !important
 
 .q-toolbar--inset.q-toolbar--inset
   padding-left: 12px
   min-height: 12px
+
+.q-tabs
+  .menu-item.q-tab--active
+    color: var(--blue1) 
+  .q-tab__label
+    font-size: inherit
+    line-height: inherit
+    font-weight: inherit
+  .q-tab__indicator
+    display: none
+
+.q-tab-panels.q-tab-panels
+    background: transparent
+
+.q-separator
+  background: transparent
 
 .text-h1.text-h1
   font: $h1-font-size $font-family  
@@ -236,10 +307,11 @@ body
   &.bold
     font-weight: $M-bold-font-weight
 
-.text-body2
+.text-body2.text-body2
   font-size: $S-font-size
   font-weight: $S-font-weight
   letter-spacing: $S-letter-spacing
+  line-height: 1em
   color: var(--color-text)
   &.bold
     font-weight: $S-bold-font-weight

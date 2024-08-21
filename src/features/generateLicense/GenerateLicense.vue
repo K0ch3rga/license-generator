@@ -1,17 +1,15 @@
 <script setup lang="ts">
 import { generateLicense, type LicenseInfo } from '@/entities/license'
-import { exportFile, type QFile } from 'quasar'
+import { exportFile, date, type QFile } from 'quasar'
 import { ref, type Ref } from 'vue'
+import { getErrorByCode, showError } from '../showError'
 const popupVisible = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const file = ref<File>()
 const product = ref<string>()
 const company = ref<string>()
-const date = new Date()
-date.setMonth(new Date().getMonth() + 1)
-const add0ToNumber = (number: number): string => (number > 9 ? number.toString() : '0' + number)
 const expirationDate = ref<string>(
-  [add0ToNumber(date.getDate()), add0ToNumber(date.getMonth() + 1), date.getFullYear()].join('.')
+  date.formatDate(date.addToDate(new Date(), { months: 1 }), 'D.M.YYYY')
 )
 const userCount = ref<number>(1)
 const fileUploader = ref() as Ref<QFile>
@@ -24,35 +22,45 @@ const handlePopupToggle = () => {
 
 const handleSubmit = async () => {
   loading.value = true
-  const downloadedFile = await generateLicense(file.value, {
+  generateLicense(file.value, {
     company_name: company.value,
     product_name: product.value,
     license_users_count: userCount.value,
-    exp_time: expirationDate.value
+    exp_time: date.formatDate(
+      date.extractDate(expirationDate.value, 'D.M.YYYY'),
+      'DD-MM-YYYY'
+    ),
   } as LicenseInfo)
+    .then((downloadedFile) => {
+      emits('AddLicense')
+      exportFile(
+        downloadedFile.filename ?? 'license file.txt',
+        downloadedFile.blob
+      )
+    })
+    .catch((e) => showError(getErrorByCode(e)))
 
   popupVisible.value = false
   file.value = undefined
   product.value = ''
   company.value = ''
-  expirationDate.value = [
-    add0ToNumber(date.getDate()),
-    add0ToNumber(date.getMonth() + 1),
-    date.getFullYear()
-  ].join('.')
   userCount.value = 1
-
-  emits('AddLicense')
-  exportFile(downloadedFile.filename ?? 'license file', downloadedFile.blob)
+  expirationDate.value = date.formatDate(
+    date.addToDate(new Date(), { months: 1 }),
+    'D.M.YYYY'
+  )
 }
 
 const ruLocale = {
-  days: 'Воскресенье_Понедельник_Вторник_Среда_Четверг_Пятница_Суббота_Воскресенье'.split('_'),
-  daysShort: 'Вс_Пн_Вт_Ср_Чт_Пт_Сб'.split('_'),
-  months: 'Январь_Февраль_Март_Апрель_Май_Июнь_Июль_Август_Сентябрь_Октябрь_Ноябрь_Декабрь'.split(
+  days: 'Воскресенье_Понедельник_Вторник_Среда_Четверг_Пятница_Суббота_Воскресенье'.split(
     '_'
   ),
-  monthsShort: 'Янв_Фев_Мар_Апр_Май_Июн_Июл_Авг_Сен_Окт_Ноя_Дек'.split('_')
+  daysShort: 'Вс_Пн_Вт_Ср_Чт_Пт_Сб'.split('_'),
+  months:
+    'Январь_Февраль_Март_Апрель_Май_Июнь_Июль_Август_Сентябрь_Октябрь_Ноябрь_Декабрь'.split(
+      '_'
+    ),
+  monthsShort: 'Янв_Фев_Мар_Апр_Май_Июн_Июл_Авг_Сен_Окт_Ноя_Дек'.split('_'),
 }
 
 const uploadFile = () => {
@@ -91,14 +99,18 @@ const uploadFile = () => {
         v-model="userCount"
         no-error-icon
         hide-bottom-space
+        :rules="[
+          (v: string) => !!v,
+          (v: string | number) => !isNaN(v as number),
+        ]"
       />
       <label>Дата окончания</label>
       <q-input
         v-model="expirationDate"
-        mask="##.##.####"
         :rules="[
-          (v: string) => /^[0-3]\d\.[0-1]\d\.[\d]+$/.test(v)
-          // (v: string) => new Date(v).getTime() < new Date().getTime()
+          (v: string) => /^[0-3]?\d\.[0-1]?\d\.[\d]+$/.test(v),
+          (v: string) =>
+            date.extractDate(v, 'D.M.YYYY').getTime() > new Date().getTime(),
         ]"
         placeholder="Введите дату окончания"
         outlined
@@ -107,18 +119,31 @@ const uploadFile = () => {
         no-error-icon
       >
         <template v-slot:append>
-          <q-icon size="14px" name="img:src/shared/assets/calendar.svg" class="cursor-pointer">
-            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+          <q-icon
+            size="14px"
+            name="img:src/shared/assets/calendar.svg"
+            class="cursor-pointer"
+          >
+            <q-popup-proxy
+              cover
+              transition-show="scale"
+              transition-hide="scale"
+            >
               <q-date
                 v-model="expirationDate"
-                mask="DD.MM.YYYY"
+                mask="D.M.YYYY"
                 minimal
                 first-day-of-week="1"
                 class="date-input"
                 :locale="ruLocale"
               >
                 <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Закрыть" class="btn btn-fill" flat />
+                  <q-btn
+                    v-close-popup
+                    label="Закрыть"
+                    class="btn btn-fill"
+                    flat
+                  />
                 </div>
               </q-date>
             </q-popup-proxy>

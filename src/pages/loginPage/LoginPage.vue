@@ -19,11 +19,14 @@ const handleLogin = async () => {
   loading.value = true
   getToken(login.value, password.value)
     .then((t) => {
+      const userInfo = decodeJwt<UserInfo>(t.access_token)
+      if (!userInfo) Promise.reject(500)
+
       const time = new Date().getTime() + 7200000 // 2h
       Cookies.set('session', t.access_token, {
         expires: new Date(time).toUTCString(),
       })
-      user.setUser(decodeJwt<UserInfo>(t.access_token).username)
+      user.setUserFromJWT(decodeJwt<UserInfo>(t.access_token))
       console.log(decodeJwt<UserInfo>(t.access_token))
       routes.replace({ name: 'main' })
     })
@@ -43,7 +46,7 @@ const closeError = () => {
         <q-chip
           outline
           :label="error"
-          class="q-my-md error-label self-stretch"
+          class="q-my-md error-label self-stretch error"
           :class="{ 'hidden-chip': !error }"
           :ripple="false"
           icon="svguse:src/shared/assets/block.svg#block"

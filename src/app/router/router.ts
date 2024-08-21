@@ -33,7 +33,7 @@ const routes: RouteRecordRaw[] = [
 
 const router = createRouter({ routes, history: createWebHistory() })
 
-router.beforeEach(async (to, from) => {
+router.beforeEach((to, from) => {
   const user = useUserStore()
   console.log(to)
   console.log(
@@ -45,7 +45,7 @@ router.beforeEach(async (to, from) => {
   )
   if (to.meta.requiresAuth && !user.isLogged) return { name: 'login' }
   if (to.name == 'login' && user.isLogged) return { name: 'main' }
-  if (to.meta.adminOnly && !user.isLogged) return from
+  if (to.meta.adminOnly && !user.canManageUsersAndRoles) return from
 })
 
 export { router }
