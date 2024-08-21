@@ -6,4 +6,5 @@ export {
   getUserInfo,
   getAllUsers,
   createUser,
+  deleteUser,
 } from './api'

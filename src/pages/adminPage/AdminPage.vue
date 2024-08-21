@@ -1,12 +1,12 @@
 <script setup lang="ts">
 import { getAllAccesses } from '@/entities/accsses'
 import type { Role } from '@/entities/role'
-import { getAllRoles } from '@/entities/role'
-import { getAllUsers } from '@/entities/user'
+import { deleteRole, getAllRoles } from '@/entities/role'
+import { deleteUser, getAllUsers } from '@/entities/user'
 import type { User } from '@/entities/user/User'
 import { Header } from '@/widgets/header'
 import type { Column } from '@/shared/model'
-import { onBeforeMount, ref } from 'vue'
+import { onBeforeMount, ref, toRaw } from 'vue'
 import { getErrorByCode, showError } from '@/features/showError'
 import { useQuasar } from 'quasar'
 import { CreateRole } from '@/features/createRole'
@@ -63,7 +63,6 @@ const handleUpdate = () => {
   const acessesPromise = getAllAccesses()
   const usersPromise = getAllUsers()
 
-  console.log(rolesPromise)
   Promise.all([rolesPromise, acessesPromise, usersPromise])
     .then((r) => {
       roles.value = r[0]
@@ -74,11 +73,17 @@ const handleUpdate = () => {
     .catch((r) => showError(getErrorByCode(r)))
 }
 
-const handleDeleteRole = (role: Role[]) => {
-  console.log(role)
+const handleDeleteRole = async (role: Role[]) => {
+  Promise.all(role.map((r) => deleteRole(r))).catch((e) =>
+    showError(getErrorByCode(e))
+  )
+  handleUpdate()
 }
 const handleDeleteUser = (user: User[]) => {
-  console.log(user)
+  Promise.all(user.map((u) => deleteUser(u))).catch((e) =>
+    showError(getErrorByCode(e))
+  )
+  handleUpdate()
 }
 onBeforeMount(() => {
   handleUpdate()
