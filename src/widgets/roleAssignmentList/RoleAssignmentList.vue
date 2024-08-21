@@ -8,7 +8,6 @@ const props = defineProps<{
   columns: Column[]
   rows: Role[] | User[]
   options: string[]
-  type: typeof Role
 }>()
 const emits = defineEmits<{
   add: []
