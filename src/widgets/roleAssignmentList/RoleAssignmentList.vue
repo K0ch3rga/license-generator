@@ -1,23 +1,23 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Role | User">
 import type { Role } from '@/entities/role'
 import type { User } from '@/entities/user'
 import type { Column } from '@/shared/model'
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 
 const props = defineProps<{
   columns: Column[]
-  rows: Role[] | User[]
+  rows: T[]
   options: string[]
   optionLabel: (item: string) => string
 }>()
 const emits = defineEmits<{
   add: []
-  delete: [Role[] | User[]]
+  delete: [T[]]
   update: []
-  removeRole: [Role | User, string]
-  addRole: [Role | User, string]
+  removeRole: [T, string]
+  addRole: [T, string]
 }>()
-const selected = ref<Role[] | User[]>([])
+const selected = ref<T[]>([]) as Ref<T[]>
 const pagination = ref({ rowsPerPage: 0 })
 </script>
 <template>
