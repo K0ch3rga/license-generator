@@ -130,11 +130,17 @@
       .q-item__label:after
         content: ' ✓'
 
+.q-field.field.q-field--dense
+  margin-left: -8px
+  .q-field__control
+    min-height: 1rem
+    color: black
+
 .q-checkbox.checkbox
   .q-checkbox__bg
     border-radius: calc( #{$border-radius} / 2 )
   .q-checkbox__inner 
-    font-size: 0
+    font-size: 2rem
     color: var(--blue1) !important
     &.q-checkbox__inner--falsy
       color: var(--grey3) !important

@@ -6,11 +6,12 @@ import { getErrorByCode, showError } from '../showError'
 const popupVisible = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const file = ref<File>()
-const product = ref<string>()
-const company = ref<string>()
+const product = ref<string>('')
+const company = ref<string>('')
 const expirationDate = ref<string>(
   date.formatDate(date.addToDate(new Date(), { months: 1 }), 'D.M.YYYY')
 )
+const endless = ref<boolean>(false)
 const userCount = ref<number>(1)
 const fileUploader = ref() as Ref<QFile>
 
@@ -27,7 +28,9 @@ const handleSubmit = async () => {
     company_name: company.value,
     product_name: product.value,
     license_users_count: userCount.value,
-    exp_time: date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'DD-MM-YYYY'),
+    exp_time:
+      date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'DD-MM-YYYY') ??
+      undefined,
   } as NewLicenseDto)
     .then((downloadedFile) => {
       emits('AddLicense')
@@ -60,94 +63,101 @@ const uploadFile = () => {
 <template>
   <q-dialog v-model="popupVisible">
     <q-card flat class="popup q-pa-sm" v-show="popupVisible">
-      <label>Название компании</label>
-      <q-input
-        outlined
-        class="text-input q-mb-sm"
-        placeholder="Введите название компании"
-        v-model="company"
-        no-error-icon
-        hide-bottom-space
-        :rules="[(v: string) => !!v]"
-      />
-      <label>Название продукта</label>
-      <q-input
-        outlined
-        class="text-input q-mb-sm"
-        placeholder="Введите название продукта"
-        v-model="product"
-        no-error-icon
-        hide-bottom-space
-        :rules="[(v: string) => !!v]"
-      />
-      <label>Количество пользователей</label>
-      <q-input
-        outlined
-        class="text-input q-mb-sm"
-        placeholder="Введите количество пользователей"
-        v-model="userCount"
-        no-error-icon
-        hide-bottom-space
-        :rules="[(v: string) => !!v, (v: string | number) => !isNaN(v as number)]"
-      />
-      <label>Дата окончания</label>
-      <q-input
-        v-model="expirationDate"
-        :rules="[
-          (v: string) => /^[0-3]?\d\.[0-1]?\d\.[\d]+$/.test(v),
-          (v: string) => date.extractDate(v, 'D.M.YYYY').getTime() > new Date().getTime(),
-        ]"
-        placeholder="Введите дату окончания"
-        outlined
-        class="text-input q-mb-sm"
-        hide-bottom-space
-        no-error-icon
-      >
-        <template v-slot:append>
-          <q-icon size="14px" name="img:src/shared/assets/calendar.svg" class="cursor-pointer">
-            <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-              <q-date
-                v-model="expirationDate"
-                mask="D.M.YYYY"
-                minimal
-                first-day-of-week="1"
-                class="date-input"
-                :locale="ruLocale"
-              >
-                <div class="row items-center justify-end">
-                  <q-btn v-close-popup label="Закрыть" class="btn btn-fill" flat />
-                </div>
-              </q-date>
-            </q-popup-proxy>
-          </q-icon>
-        </template>
-      </q-input>
-      <label>Файл</label>
-      <q-file
-        for="fileUpload"
-        outlined
-        dense
-        class="q-mb-sm file-upload"
-        v-model="file"
-        ref="fileUploader"
-      >
-        <template v-slot:after>
-          <q-btn
-            flat
-            :ripple="false"
-            label="Выбрать файл"
-            class="btn btn-stroke small"
-            @click="uploadFile"
-          />
-        </template>
-      </q-file>
-      <q-btn
-        flat
-        :ripple="false"
-        class="btn btn-stroke text-button medium"
-        label="Подтвердить"
-        @click="handleSubmit"
-      />
+      <q-card-section class="text-h3">Создать новую лицензию</q-card-section>
+      <q-card-section class="q-py-xs">
+        <label>Название компании</label>
+        <q-input
+          outlined
+          class="text-input q-mb-sm"
+          placeholder="Введите название компании"
+          v-model="company"
+          no-error-icon
+          hide-bottom-space
+          :rules="[(v: string) => !!v]"
+        />
+        <label>Название продукта</label>
+        <q-input
+          outlined
+          class="text-input q-mb-sm"
+          placeholder="Введите название продукта"
+          v-model="product"
+          no-error-icon
+          hide-bottom-space
+          :rules="[(v: string) => !!v]"
+        />
+        <label>Количество пользователей</label>
+        <q-input
+          outlined
+          class="text-input q-mb-sm"
+          placeholder="Введите количество пользователей"
+          v-model="userCount"
+          no-error-icon
+          hide-bottom-space
+          :rules="[(v: string) => !!v, (v: string | number) => !isNaN(v as number)]"
+        />
+        <label>Дата окончания</label>
+        <q-input
+          v-model="expirationDate"
+          :disable="endless"
+          :rules="[
+            (v: string) => /^[0-3]?\d\.[0-1]?\d\.[\d]+$/.test(v),
+            (v: string) => date.extractDate(v, 'D.M.YYYY').getTime() > new Date().getTime(),
+          ]"
+          placeholder="Введите дату окончания"
+          outlined
+          class="text-input"
+          hide-bottom-space
+          no-error-icon
+        >
+          <template v-slot:append>
+            <q-icon size="14px" name="img:src/shared/assets/calendar.svg" class="cursor-pointer">
+              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                <q-date
+                  v-model="expirationDate"
+                  mask="D.M.YYYY"
+                  minimal
+                  first-day-of-week="1"
+                  class="date-input"
+                  :locale="ruLocale"
+                >
+                  <div class="row items-center justify-end">
+                    <q-btn v-close-popup label="Закрыть" class="btn btn-fill" flat />
+                  </div>
+                </q-date>
+              </q-popup-proxy>
+            </q-icon>
+          </template>
+        </q-input>
+        <q-field borderless dense class="field">
+          <q-checkbox v-model="endless" label="Бессрочно" class="checkbox" />
+        </q-field>
+        <label>Файл аппаратных ресурсов</label>
+        <q-file
+          for="fileUpload"
+          outlined
+          dense
+          class="q-mb-sm file-upload"
+          v-model="file"
+          ref="fileUploader"
+        >
+          <template v-slot:after>
+            <q-btn
+              flat
+              :ripple="false"
+              label="Выбрать файл"
+              class="btn btn-stroke small"
+              @click="uploadFile"
+            />
+          </template>
+        </q-file>
+        <q-btn
+          flat
+          :ripple="false"
+          class="btn btn-stroke text-button medium q-mt-lg"
+          label="Подтвердить"
+          @click="handleSubmit"
+        />
+      </q-card-section>
     </q-card>
   </q-dialog>
   <q-btn
