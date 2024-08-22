@@ -2,8 +2,9 @@ import './shared/assets/main.css'
 
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
-import { Cookies, Quasar } from 'quasar'
+import { Cookies, Dialog, Quasar } from 'quasar'
 import { App } from './app'
+import { router } from './app/router'
 import quasarIconSet from 'quasar/icon-set/material-symbols-sharp'
 
 // Import icon libraries
@@ -11,19 +12,25 @@ import '@quasar/extras/material-symbols-sharp/material-symbols-sharp.css'
 
 // Import Quasar css
 import 'quasar/src/css/index.sass'
+import { setSessionFromCookies } from './features/loadSession'
 
 const app = createApp(App)
 
-app.use(createPinia())
+const pinia = createPinia()
+app.use(pinia)
+setSessionFromCookies()
+
+app.use(router)
 
 app.use(Quasar, {
   config: {
-    dark: 'auto'
+    dark: 'auto',
   },
   plugins: {
-    Cookies
+    Cookies,
+    Dialog,
   }, // import Quasar plugins and add here
-  iconSet: quasarIconSet
+  iconSet: quasarIconSet,
 })
 
-app.mount('#app')
+router.isReady().then(() => app.mount('#app'))

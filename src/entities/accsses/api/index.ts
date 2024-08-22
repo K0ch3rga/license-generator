@@ -1,0 +1,1 @@
+export { getAllAccesses } from './crudAccesses'

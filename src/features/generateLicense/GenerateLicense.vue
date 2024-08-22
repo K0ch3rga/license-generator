@@ -1,17 +1,15 @@
 <script setup lang="ts">
-import { generateLicense, type LicenseInfo } from '@/entities/license'
-import { exportFile, type QFile } from 'quasar'
+import { generateLicense, type NewLicenseDto } from '@/entities/license'
+import { exportFile, date, type QFile } from 'quasar'
 import { ref, type Ref } from 'vue'
+import { getErrorByCode, showError } from '../showError'
 const popupVisible = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const file = ref<File>()
 const product = ref<string>()
 const company = ref<string>()
-const date = new Date()
-date.setMonth(new Date().getMonth() + 1)
-const add0ToNumber = (number: number): string => (number > 9 ? number.toString() : '0' + number)
 const expirationDate = ref<string>(
-  [add0ToNumber(date.getDate()), add0ToNumber(date.getMonth() + 1), date.getFullYear()].join('.')
+  date.formatDate(date.addToDate(new Date(), { months: 1 }), 'D.M.YYYY')
 )
 const userCount = ref<number>(1)
 const fileUploader = ref() as Ref<QFile>
@@ -23,27 +21,26 @@ const handlePopupToggle = () => {
 }
 
 const handleSubmit = async () => {
+  if (!file.value) return
   loading.value = true
-  const downloadedFile = await generateLicense(file.value, {
+  generateLicense(file.value, {
     company_name: company.value,
     product_name: product.value,
     license_users_count: userCount.value,
-    exp_time: expirationDate.value
-  } as LicenseInfo)
+    exp_time: date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'DD-MM-YYYY'),
+  } as NewLicenseDto)
+    .then((downloadedFile) => {
+      emits('AddLicense')
+      exportFile(downloadedFile.filename ?? 'license file.txt', downloadedFile.blob)
+    })
+    .catch((e) => showError(getErrorByCode(e)))
 
   popupVisible.value = false
   file.value = undefined
   product.value = ''
   company.value = ''
-  expirationDate.value = [
-    add0ToNumber(date.getDate()),
-    add0ToNumber(date.getMonth() + 1),
-    date.getFullYear()
-  ].join('.')
   userCount.value = 1
-
-  emits('AddLicense')
-  exportFile(downloadedFile.filename ?? 'license file', downloadedFile.blob)
+  expirationDate.value = date.formatDate(date.addToDate(new Date(), { months: 1 }), 'D.M.YYYY')
 }
 
 const ruLocale = {
@@ -52,7 +49,7 @@ const ruLocale = {
   months: 'Январь_Февраль_Март_Апрель_Май_Июнь_Июль_Август_Сентябрь_Октябрь_Ноябрь_Декабрь'.split(
     '_'
   ),
-  monthsShort: 'Янв_Фев_Мар_Апр_Май_Июн_Июл_Авг_Сен_Окт_Ноя_Дек'.split('_')
+  monthsShort: 'Янв_Фев_Мар_Апр_Май_Июн_Июл_Авг_Сен_Окт_Ноя_Дек'.split('_'),
 }
 
 const uploadFile = () => {
@@ -91,14 +88,14 @@ const uploadFile = () => {
         v-model="userCount"
         no-error-icon
         hide-bottom-space
+        :rules="[(v: string) => !!v, (v: string | number) => !isNaN(v as number)]"
       />
       <label>Дата окончания</label>
       <q-input
         v-model="expirationDate"
-        mask="##.##.####"
         :rules="[
-          (v: string) => /^[0-3]\d\.[0-1]\d\.[\d]+$/.test(v)
-          // (v: string) => new Date(v).getTime() < new Date().getTime()
+          (v: string) => /^[0-3]?\d\.[0-1]?\d\.[\d]+$/.test(v),
+          (v: string) => date.extractDate(v, 'D.M.YYYY').getTime() > new Date().getTime(),
         ]"
         placeholder="Введите дату окончания"
         outlined
@@ -111,7 +108,7 @@ const uploadFile = () => {
             <q-popup-proxy cover transition-show="scale" transition-hide="scale">
               <q-date
                 v-model="expirationDate"
-                mask="DD.MM.YYYY"
+                mask="D.M.YYYY"
                 minimal
                 first-day-of-week="1"
                 class="date-input"

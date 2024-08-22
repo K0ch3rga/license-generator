@@ -3,6 +3,7 @@ import { useUserStore } from '@/entities/user'
 import { GenerateLicense } from '@/features/generateLicense'
 import { useQuasar } from 'quasar'
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
 const theme = ref($q.dark.isActive)
@@ -10,20 +11,33 @@ const emits = defineEmits<{ licenseGenerated: [] }>()
 
 const toggleTheme = () => {
   $q.cookies.set('theme', theme.value ? 'dark' : 'light', {
-    expires: 399 // max time allowed by chrome
+    expires: 399, // max time allowed by chrome
   })
   $q.dark.set(theme.value)
 }
 
 const user = useUserStore()
+const routes = useRouter()
+const handleLogout = () => {
+  user.logout()
+  routes.push({ name: 'login' })
+}
+
+const navigateMain = () => {
+  routes.push({ name: 'main' })
+}
 </script>
 <template>
   <q-header class="q-px-lg q-py-lg">
     <q-toolbar>
-      <q-toolbar-title class="text-h3"> Генератор лицензий </q-toolbar-title>
-      <div class="grow">
-        <GenerateLicense @add-license="emits('licenseGenerated')" v-if="user.isLogged" />
+      <div class="text-h3 q-mr-md clickable-title" @click="navigateMain">
+        Генератор лицензий
       </div>
+      <GenerateLicense
+        @add-license="emits('licenseGenerated')"
+        v-if="user.isLogged && user.canCreateLicense"
+      />
+      <q-space />
       <q-btn-toggle
         unelevated
         rounded
@@ -31,20 +45,32 @@ const user = useUserStore()
         v-model:="theme"
         :options="[
           { value: false, slot: 'day' },
-          { value: true, slot: 'night' }
+          { value: true, slot: 'night' },
         ]"
         @update:model-value="toggleTheme"
       >
-        <template v-slot:day><q-icon size="14px" class="fill" name="sym_s_clear_day" /></template>
-        <template v-slot:night><q-icon size="14px" class="fill" name="sym_s_bedtime" /></template>
+        <template v-slot:day
+          ><q-icon size="14px" class="fill" name="sym_s_clear_day"
+        /></template>
+        <template v-slot:night
+          ><q-icon size="14px" class="fill" name="sym_s_bedtime"
+        /></template>
       </q-btn-toggle>
       <q-btn
         v-if="user.isLogged"
         flat
-        class="btn btn-link small text-button q-mx-sm"
+        class="btn btn-link small text-button"
         icon="svguse:src/shared/assets/man.svg#man| 0 0 100 100"
         :label="user.getLogin"
         :ripple="false"
+      />
+      <q-btn
+        v-if="user.isLogged && user.canManageUsersAndRoles"
+        flat
+        class="btn btn-link q-mr-md"
+        icon="svguse:src/shared/assets/gear.svg#gear| 0 0 16 16"
+        :ripple="false"
+        to="admin"
       />
       <q-btn
         v-if="user.isLogged"
@@ -52,7 +78,7 @@ const user = useUserStore()
         flat
         label="Выйти"
         class="btn btn-stroke small"
-        @click="() => user.logout()"
+        @click="handleLogout"
       />
     </q-toolbar>
   </q-header>
@@ -60,6 +86,7 @@ const user = useUserStore()
 <style scoped lang="sass">
 .q-toolbar__title
   flex: 0 1 min-content
-div.grow
-  flex: 1 1 min-content
+
+.clickable-title
+  cursor: pointer
 </style>

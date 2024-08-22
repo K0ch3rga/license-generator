@@ -1,20 +1,36 @@
 <script setup lang="ts">
-import { getToken, useUserStore } from '@/entities/user'
+import { getToken, useUserStore, type UserInfo } from '@/entities/user'
 import { Header } from '@/widgets/header'
 import { ref } from 'vue'
-import { getDescriptionByCode } from './loginErrorCodes'
+
+import { Cookies } from 'quasar'
+import { decodeJwt } from 'jose'
+import { useRouter } from 'vue-router'
+import { getErrorByCode } from '@/features/showError'
 
 const login = ref<string>('')
 const password = ref<string>('')
 const error = ref<string>('')
 const loading = ref<boolean>(false)
 const user = useUserStore()
+const routes = useRouter()
 
 const handleLogin = async () => {
   loading.value = true
   getToken(login.value, password.value)
-    .then((t) => user.setUser(t.access_token))
-    .catch((e) => (error.value = getDescriptionByCode(e)))
+    .then((t) => {
+      const userInfo = decodeJwt<UserInfo>(t.access_token)
+      if (!userInfo) Promise.reject(500)
+
+      const time = new Date().getTime() + 7200000 // 2h
+      Cookies.set('session', t.access_token, {
+        expires: new Date(time).toUTCString(),
+      })
+      user.setUserFromJWT(decodeJwt<UserInfo>(t.access_token))
+      console.log(decodeJwt<UserInfo>(t.access_token))
+      routes.replace({ name: 'main' })
+    })
+    .catch((e) => (error.value = getErrorByCode(e)))
     .finally(() => (loading.value = false))
 }
 
@@ -30,7 +46,7 @@ const closeError = () => {
         <q-chip
           outline
           :label="error"
-          class="q-my-md error-label self-stretch"
+          class="q-my-md error-label self-stretch error"
           :class="{ 'hidden-chip': !error }"
           :ripple="false"
           icon="svguse:src/shared/assets/block.svg#block"
@@ -48,6 +64,7 @@ const closeError = () => {
           :rules="[(val) => !!val || 'Поле обязательно']"
           lazy-rules
           no-error-icon
+          @keydown.enter.prevent="handleLogin"
         />
         <q-input
           v-model="password"
@@ -60,6 +77,7 @@ const closeError = () => {
           :rules="[(val) => !!val || 'Поле обязательно']"
           lazy-rules
           no-error-icon
+          @keydown.enter.prevent="handleLogin"
         />
         <div class="flex justify-between items-center">
           <div>
