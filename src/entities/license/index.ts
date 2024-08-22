@@ -1,2 +1,2 @@
-export * from './api'
-export type { License } from './License'
+export { generateLicense, getAllLicenses, getDigestFile, getLicense, getLicenseFile } from './api'
+export type { License, LicenseFile, NewLicenseDto } from './model'

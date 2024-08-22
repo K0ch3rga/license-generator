@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { getToken, useUserStore } from '@/entities/user'
+import { getToken, useUserStore, type UserInfo } from '@/entities/user'
 import { Header } from '@/widgets/header'
 import { ref } from 'vue'
-import { getDescriptionByCode } from './loginErrorCodes'
+
 import { Cookies } from 'quasar'
 import { decodeJwt } from 'jose'
-import type { UserInfo } from '@/entities/user'
 import { useRouter } from 'vue-router'
+import { getErrorByCode } from '@/features/showError'
 
 const login = ref<string>('')
 const password = ref<string>('')
@@ -30,7 +30,7 @@ const handleLogin = async () => {
       console.log(decodeJwt<UserInfo>(t.access_token))
       routes.replace({ name: 'main' })
     })
-    .catch((e) => (error.value = getDescriptionByCode(e)))
+    .catch((e) => (error.value = getErrorByCode(e)))
     .finally(() => (loading.value = false))
 }
 

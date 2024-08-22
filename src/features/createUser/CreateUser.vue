@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { createUser } from '@/entities/user/api/createUser'
+import { createUser } from '@/entities/user'
 import { useDialogPluginComponent } from 'quasar'
 import { ref } from 'vue'
 const { dialogRef, onDialogHide, onDialogOK } = useDialogPluginComponent()

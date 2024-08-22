@@ -1,5 +1,4 @@
-export { useUserStore, type UserInfo } from './model'
-export { type User } from './User'
+export { useUserStore, type UserInfo, type User } from './model'
 export {
   type Token,
   getToken,
@@ -7,4 +6,5 @@ export {
   getAllUsers,
   createUser,
   deleteUser,
+  patchUser,
 } from './api'

@@ -1,15 +1,5 @@
-import { getAllLicenses } from './getAllLicenses'
-import { generateLicense } from './generateLicense'
-import { getLicense } from './getLicense'
-import { getLicenseFile } from './getLicenseFile'
-import { getDigestFile } from './getDigestFIle'
-
-export type { LicenseInfo } from './generateLicense'
-
-export {
-  generateLicense,
-  getLicense,
-  getAllLicenses,
-  getLicenseFile,
-  getDigestFile,
-}
+export { getAllLicenses } from './crudLicense'
+export { generateLicense } from './crudLicense'
+export { getLicense } from './crudLicense'
+export { getLicenseFile } from './getLicenseFile'
+export { getDigestFile } from './getDigestFIle'

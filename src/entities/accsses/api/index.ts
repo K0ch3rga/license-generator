@@ -1,3 +1,1 @@
-import { getAllAccesses } from './getAllAccesses'
-
-export { getAllAccesses }
+export { getAllAccesses } from './crudAccesses'
