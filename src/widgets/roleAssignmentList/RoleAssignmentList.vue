@@ -27,7 +27,7 @@ const pagination = ref({ rowsPerPage: 0 })
     :columns="columns"
     :rows="rows"
     row-key="id"
-    selection="single"
+    selection="multiple"
     v-model:selected="selected"
     virtual-scroll
     v-model:pagination="pagination"
@@ -46,12 +46,6 @@ const pagination = ref({ rowsPerPage: 0 })
         class="btn btn-fill text-button small q-mx-xs"
         label="Удалить"
         @click="emits('delete', selected)"
-      />
-      <q-btn
-        flat
-        class="btn btn-fill text-button small q-mx-xs"
-        label="Обновить"
-        @click="emits('update')"
       />
     </template>
     <template v-slot:body-cell-selection="props">

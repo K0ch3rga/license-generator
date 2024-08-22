@@ -133,6 +133,11 @@
 .q-checkbox.checkbox
   .q-checkbox__bg
     border-radius: calc( #{$border-radius} / 2 )
+  .q-checkbox__inner 
+    font-size: 0
+    color: var(--blue1) !important
+    &.q-checkbox__inner--falsy
+      color: var(--grey3) !important
 
 .q-header.q-header
   background: transparent
@@ -255,8 +260,9 @@ body
       width: 14px
     .q-checkbox__inner 
       font-size: 0
-    .q-checkbox__inner--truthy
       color: var(--blue1) !important
+      &.q-checkbox__inner--falsy
+        color: var(--grey3) !important
 
 .q-toolbar--inset.q-toolbar--inset
   padding-left: 12px
