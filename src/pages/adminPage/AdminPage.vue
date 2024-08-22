@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Column } from '@/shared/model'
-import { getAllAccesses, type Access } from '@/entities/accsses'
+import { getAllAccesses, readableAccess, type Access } from '@/entities/accsses'
 import { type Role, deleteRole, getAllRoles, patchRole } from '@/entities/role'
 import { type User, patchUser, deleteUser, getAllUsers } from '@/entities/user'
 import { getErrorByCode, showError } from '@/features/showError'
@@ -109,6 +109,7 @@ onBeforeMount(() => {
               :columns="userCoulumns"
               :rows="usersData"
               :options="roleSelectOptions"
+              :option-label="(username) => username"
               @-add="handleCreateUserPopup"
               @delete="handleDeleteUser"
               @remove-role="handleDeleteRoleFromUser"
@@ -120,6 +121,7 @@ onBeforeMount(() => {
               :columns="rolesColumns"
               :rows="roles"
               :options="authoritiesSelectOptions"
+              :option-label="(role) => readableAccess(role)"
               @-add="handleCreateRolePopup"
               @delete="handleDeleteRole"
               @remove-role="handleDeleteAccessFromRole"

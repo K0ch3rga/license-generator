@@ -8,6 +8,7 @@ const props = defineProps<{
   columns: Column[]
   rows: Role[] | User[]
   options: string[]
+  optionLabel: (item: string) => string
 }>()
 const emits = defineEmits<{
   add: []
@@ -60,6 +61,7 @@ const pagination = ref({ rowsPerPage: 0 })
       <q-td>
         <q-select
           :options="props.options"
+          :option-label="props.optionLabel"
           v-model="cellProps.row[cellProps.col.name]"
           @add="(role) => emits('addRole', cellProps.row, role.value)"
           @remove="(role) => emits('removeRole', cellProps.row, role.value)"
