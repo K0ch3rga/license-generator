@@ -7,6 +7,8 @@ import { Cookies } from 'quasar'
 import { decodeJwt } from 'jose'
 import { useRouter } from 'vue-router'
 import { getErrorByCode } from '@/features/showError'
+import { getPublicKey } from '@/shared/api/getPublicKey'
+import { encrypt } from '@/shared/model'
 
 const login = ref<string>('')
 const password = ref<string>('')
@@ -16,8 +18,17 @@ const user = useUserStore()
 const routes = useRouter()
 
 const handleLogin = async () => {
+  const key = (await getPublicKey()) ?? ''
+  console.log(key)
+  const encryptedPassword = encrypt(
+    password.value,
+    key
+    // 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYgYmmAZqr+BPDXfYhCOYGZJFzBEjD9yqOlBSTlbFe6rw6DJoiWc/H4ibWu53ViLrj+th2vWFiS7VUIME2z/0ASjuo8JgN97z8huTjztTpemzksOX0Y4OkRDc+D+KfMW3iJATjTgTovIVuvhF0c/utuiY9aDqDuQyKVIL+APpHywIDAQAB'
+  )
+  if (encryptedPassword === false || !!encryptedPassword) return // TODO error
+
   loading.value = true
-  getToken(login.value, password.value)
+  getToken(login.value, encryptedPassword)
     .then((t) => {
       const userInfo = decodeJwt<UserInfo>(t.access_token)
       if (!userInfo) Promise.reject(500)

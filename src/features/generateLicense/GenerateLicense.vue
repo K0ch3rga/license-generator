@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { generateLicense, type NewLicenseDto } from '@/entities/license'
-import { exportFile, date, type QFile } from 'quasar'
+import { exportFile, date, type QFile, useQuasar } from 'quasar'
 import { ref, type Ref } from 'vue'
 import { getErrorByCode, showError } from '../showError'
+import { MapPopup } from '@/shared/ui'
+const $q = useQuasar()
 const popupVisible = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const file = ref<File>()
@@ -14,11 +16,19 @@ const expirationDate = ref<string>(
 const endless = ref<boolean>(false)
 const userCount = ref<number>(1)
 const fileUploader = ref() as Ref<QFile>
+const additionalData = ref<Map<string, string>>(new Map<string, string>())
 
 const emits = defineEmits<{ AddLicense: [] }>()
 
 const handlePopupToggle = () => {
   popupVisible.value = !popupVisible.value
+}
+
+const handleMapOpen = () => {
+  $q.dialog({
+    component: MapPopup,
+    componentProps: { map: additionalData.value },
+  }).onOk((payload: Map<string, string>) => (additionalData.value = payload))
 }
 
 const handleSubmit = async () => {
@@ -31,6 +41,7 @@ const handleSubmit = async () => {
     exp_time:
       date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'DD-MM-YYYY') ??
       undefined,
+    additionalData: JSON.stringify(Object.fromEntries(additionalData.value)),
   } as NewLicenseDto)
     .then((downloadedFile) => {
       emits('AddLicense')
@@ -64,7 +75,7 @@ const uploadFile = () => {
   <q-dialog v-model="popupVisible">
     <q-card flat class="popup q-pa-sm" v-show="popupVisible">
       <q-card-section class="text-h3">Создать новую лицензию</q-card-section>
-      <q-card-section class="q-py-xs">
+      <q-card-section class="q-py-xs flex column">
         <label>Название компании</label>
         <q-input
           outlined
@@ -153,7 +164,15 @@ const uploadFile = () => {
         <q-btn
           flat
           :ripple="false"
-          class="btn btn-stroke text-button medium q-mt-lg"
+          class="btn btn-stroke text-button small"
+          label="Добавить значения"
+          @click="handleMapOpen"
+        />
+
+        <q-btn
+          flat
+          :ripple="false"
+          class="btn btn-fill text-button medium q-mt-lg"
           label="Подтвердить"
           @click="handleSubmit"
         />
