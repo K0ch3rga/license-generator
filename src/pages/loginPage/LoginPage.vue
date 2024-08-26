@@ -25,7 +25,10 @@ const handleLogin = async () => {
     key
     // 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYgYmmAZqr+BPDXfYhCOYGZJFzBEjD9yqOlBSTlbFe6rw6DJoiWc/H4ibWu53ViLrj+th2vWFiS7VUIME2z/0ASjuo8JgN97z8huTjztTpemzksOX0Y4OkRDc+D+KfMW3iJATjTgTovIVuvhF0c/utuiY9aDqDuQyKVIL+APpHywIDAQAB'
   )
-  if (encryptedPassword === false || !!encryptedPassword) return // TODO error
+  if (encryptedPassword === false || !encryptedPassword) {
+    error.value = getErrorByCode(500)
+    return
+  }
 
   loading.value = true
   getToken(login.value, encryptedPassword)
@@ -37,7 +40,7 @@ const handleLogin = async () => {
       Cookies.set('session', t.access_token, {
         expires: new Date(time).toUTCString(),
       })
-      user.setUserFromJWT(decodeJwt<UserInfo>(t.access_token))
+      user.setUserFromJWT(userInfo)
       console.log(decodeJwt<UserInfo>(t.access_token))
       routes.replace({ name: 'main' })
     })
