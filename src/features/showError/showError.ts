@@ -1,7 +1,7 @@
 import { Dialog } from 'quasar'
 import ShowError from './ShowError.vue'
 
-export const showError = (error: string) => {
+export const showError = (error: string): void => {
   const dialog = Dialog.create({
     component: ShowError,
     componentProps: {
@@ -13,8 +13,7 @@ export const showError = (error: string) => {
   setTimeout(() => dialog.hide(), 5 * 1000)
 }
 
-export const getErrorByCode = (code: number): string =>
-  errorCodes.get(code) ?? 'Сервер не отвечает'
+export const getErrorByCode = (code: number): string => errorCodes.get(code) ?? 'Сервер не отвечает'
 
 const errorCodes = new Map<number, string>()
 errorCodes.set(401, 'Вы не авторизованы')

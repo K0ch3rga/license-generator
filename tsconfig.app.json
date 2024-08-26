@@ -1,11 +1,7 @@
 {
   "extends": "@vue/tsconfig/tsconfig.dom.json",
-  "include": [
-    "env.d.ts",
-    "src/**/*",
-    "src/**/*.vue",
-    "src/app/router/typed-meta.d.ts"
-  ],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue", "src/app/router/typed-meta.d.ts"],
+  "files": ["src/features/showError/showError.ts"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
