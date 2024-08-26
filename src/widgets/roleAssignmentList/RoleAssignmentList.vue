@@ -1,16 +1,23 @@
-<script setup lang="ts">
+<script setup lang="ts" generic="T extends Role | User">
 import type { Role } from '@/entities/role'
 import type { User } from '@/entities/user'
 import type { Column } from '@/shared/model'
-import { ref } from 'vue'
+import { ref, type Ref } from 'vue'
 
 const props = defineProps<{
   columns: Column[]
-  rows: Role[] | User[]
+  rows: T[]
   options: string[]
+  optionLabel: (item: string) => string
 }>()
-const emits = defineEmits<{ add: []; delete: [Role[] | User[]]; update: [] }>()
-const selected = ref<Role[] | User[]>([])
+const emits = defineEmits<{
+  add: []
+  delete: [T[]]
+  update: []
+  removeRole: [T, string]
+  addRole: [T, string]
+}>()
+const selected = ref<T[]>([]) as Ref<T[]>
 const pagination = ref({ rowsPerPage: 0 })
 </script>
 <template>
@@ -21,7 +28,7 @@ const pagination = ref({ rowsPerPage: 0 })
     :columns="columns"
     :rows="rows"
     row-key="id"
-    selection="single"
+    selection="multiple"
     v-model:selected="selected"
     virtual-scroll
     v-model:pagination="pagination"
@@ -41,12 +48,6 @@ const pagination = ref({ rowsPerPage: 0 })
         label="Удалить"
         @click="emits('delete', selected)"
       />
-      <q-btn
-        flat
-        class="btn btn-fill text-button small q-mx-xs"
-        label="Обновить"
-        @click="emits('update')"
-      />
     </template>
     <template v-slot:body-cell-selection="props">
       <q-td>{{ props.value }}</q-td>
@@ -60,7 +61,10 @@ const pagination = ref({ rowsPerPage: 0 })
       <q-td>
         <q-select
           :options="props.options"
+          :option-label="props.optionLabel"
           v-model="cellProps.row[cellProps.col.name]"
+          @add="(role) => emits('addRole', cellProps.row, role.value)"
+          @remove="(role) => emits('removeRole', cellProps.row, role.value)"
           multiple
           rounded
           outlined

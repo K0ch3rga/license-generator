@@ -1,5 +1,5 @@
 import { exportFile, useQuasar } from 'quasar'
-import type { Column } from './'
+import type { Column } from '@/shared/model'
 const $q = useQuasar()
 const wrapCsvValue = (val: any, formatFn: ((val: any, row: any) => any) | undefined, row: any) => {
   let formatted = formatFn !== void 0 ? formatFn(val, row) : val
@@ -40,13 +40,13 @@ export const exportTable = (rows: any[], columns: Column[]) => {
   const status = exportFile('table-export.csv', content, {
     encoding: 'utf-8',
     mimeType: 'text/csv',
-    byteOrderMark: '\uFEFF'
+    byteOrderMark: '\uFEFF',
   })
   if (status !== true) {
     $q.notify({
       message: 'Browser denied file download...',
       color: 'negative',
-      icon: 'warning'
+      icon: 'warning',
     })
   }
 }

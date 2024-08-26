@@ -9,7 +9,7 @@ installQuasarPlugin({ plugins: { Cookies, Dark } })
 describe('App', () => {
   it('mounts', () => {
     const wrapper = mount(App)
-    const app = wrapper.get('[data-test="app"]')
+    const app = wrapper.get('router-view')
     expect(!!app).toBe(true)
   })
 })
