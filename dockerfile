@@ -1,5 +1,6 @@
 # Stage 1: Build the Vue.js app
 FROM node:16-alpine as build
+RUN mkdir /app
 
 # Set the working directory
 WORKDIR /app

@@ -38,16 +38,20 @@ const handleSubmit = async () => {
     company_name: company.value,
     product_name: product.value,
     license_users_count: userCount.value,
-    exp_time:
-      date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'DD-MM-YYYY') ??
-      undefined,
-    additionalData: JSON.stringify(Object.fromEntries(additionalData.value)),
+    exp_time: endless.value
+      ? undefined
+      : (date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'YYYY-MM-DD') ??
+        undefined),
+    additional_license_information: JSON.stringify(Object.fromEntries(additionalData.value)),
   } as NewLicenseDto)
     .then((downloadedFile) => {
       emits('AddLicense')
       exportFile(downloadedFile.filename ?? 'license file.txt', downloadedFile.blob)
     })
-    .catch((e) => showError(getErrorByCode(e)))
+    .catch((e) => {
+      console.log(e)
+      showError(getErrorByCode(e))
+    })
 
   popupVisible.value = false
   file.value = undefined

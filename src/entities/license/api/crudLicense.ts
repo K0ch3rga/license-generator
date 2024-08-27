@@ -18,7 +18,7 @@ export const generateLicense = async (
   })
     .then((r) => (r.ok ? r : Promise.reject(r.status)))
     .then(async (r) => ({
-      filename: r.headers.get('Content-Disposition'),
+      filename: r.headers.get('Content-Disposition')?.match(/filename="([^"]+)"/)?.[1],
       blob: await r.blob(),
     }))
     .catch((e) => Promise.reject(e))

@@ -36,8 +36,10 @@ const userCoulumns = ref<Column[]>([
   { field: 'roles', name: 'roles', label: 'Роли', align: 'left' },
 ])
 
+const authorities = ref<Access[]>([])
+
 const roleSelectOptions = ref<string[]>(roles.value.map((v) => v.name))
-const authoritiesSelectOptions = ref<string[]>([])
+const authoritiesSelectOptions = ref<string[]>(authorities.value.map((a) => a.name))
 
 const handleCreateRolePopup = () => {
   $q.dialog({
@@ -64,9 +66,10 @@ const handleUpdate = () => {
   Promise.all([rolesPromise, accessesPromise, usersPromise])
     .then((r) => {
       roles.value = r[0]
-      authoritiesSelectOptions.value = r[1].map((v: Access) => v.name)
+      authorities.value = r[1]
       usersData.value = r[2]
       roleSelectOptions.value = roles.value.map((v) => v.name)
+      authoritiesSelectOptions.value = authorities.value.map((a) => a.name)
     })
     .catch((r) => showError(getErrorByCode(r)))
 }
@@ -85,9 +88,9 @@ const handleDeleteRoleFromUser = (user: User, roleName: string) =>
 const handleAddRoleToUser = (user: User, roleName: string) =>
   patchUser(user, roles.value.find((r) => r.name == roleName)?.id ?? -1, true)
 const handleDeleteAccessFromRole = (role: Role, accessName: string) =>
-  patchRole(role, authoritiesSelectOptions.value.indexOf(accessName), false)
+  patchRole(role, authorities.value.find((a) => a.name === accessName)?.id ?? -1, false)
 const handleAddAccessToRole = (role: Role, accessName: string) =>
-  patchRole(role, authoritiesSelectOptions.value.indexOf(accessName), true)
+  patchRole(role, authorities.value.find((a) => a.name === accessName)?.id ?? -1, true)
 
 onBeforeMount(() => {
   handleUpdate()

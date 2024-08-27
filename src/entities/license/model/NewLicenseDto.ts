@@ -3,5 +3,5 @@ export type NewLicenseDto = {
   product_name: string
   license_users_count: number
   exp_time?: string
-  additionalData?: string
+  additional_license_information?: string
 }
