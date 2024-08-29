@@ -5,7 +5,7 @@ import { Header } from '@/widgets/header'
   <Header />
   <q-page-container>
     <q-page class="flex flex-center fit column">
-      <q-card flat>
+      <q-card flat class="no-border">
         <q-card-section class="flex justify-evenly q-pa-xs overlay">
           <div class="not-found">404</div>
         </q-card-section>
