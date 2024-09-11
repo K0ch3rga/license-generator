@@ -18,19 +18,15 @@ const user = useUserStore()
 const routes = useRouter()
 
 const handleLogin = async () => {
+  loading.value = true
   const key = (await getPublicKey()) ?? ''
-  console.log(key)
-  const encryptedPassword = encrypt(
-    password.value,
-    key
-    // 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYgYmmAZqr+BPDXfYhCOYGZJFzBEjD9yqOlBSTlbFe6rw6DJoiWc/H4ibWu53ViLrj+th2vWFiS7VUIME2z/0ASjuo8JgN97z8huTjztTpemzksOX0Y4OkRDc+D+KfMW3iJATjTgTovIVuvhF0c/utuiY9aDqDuQyKVIL+APpHywIDAQAB'
-  )
+  const encryptedPassword = encrypt(password.value, key)
   if (encryptedPassword === false || !encryptedPassword) {
     error.value = getErrorByCode(500)
+    loading.value = false
     return
   }
 
-  loading.value = true
   getToken(login.value, encryptedPassword)
     .then((t) => {
       const userInfo = decodeJwt<UserInfo>(t.access_token)

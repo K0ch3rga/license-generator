@@ -39,7 +39,7 @@ const handleSubmit = async () => {
     product_name: product.value,
     license_users_count: userCount.value,
     exp_time: endless.value
-      ? undefined
+      ? ''
       : (date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'YYYY-MM-DD') ??
         undefined),
     additional_license_information: JSON.stringify(Object.fromEntries(additionalData.value)),
