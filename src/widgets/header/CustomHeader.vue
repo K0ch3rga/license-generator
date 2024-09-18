@@ -28,9 +28,9 @@ const navigateMain = () => {
 }
 </script>
 <template>
-  <q-header class="q-px-lg q-py-lg">
+  <q-header class="q-px-lg q-py-lg" data-test="header">
     <q-toolbar>
-      <div class="text-h3 q-mr-md clickable-title" @click="navigateMain">
+      <div class="text-h3 q-mr-md clickable-title" @click="navigateMain" data-test="title">
         Генератор лицензий
       </div>
       <GenerateLicense
@@ -49,12 +49,8 @@ const navigateMain = () => {
         ]"
         @update:model-value="toggleTheme"
       >
-        <template v-slot:day
-          ><q-icon size="14px" class="fill" name="sym_s_clear_day"
-        /></template>
-        <template v-slot:night
-          ><q-icon size="14px" class="fill" name="sym_s_bedtime"
-        /></template>
+        <template v-slot:day><q-icon size="14px" class="fill" name="sym_s_clear_day" /></template>
+        <template v-slot:night><q-icon size="14px" class="fill" name="sym_s_bedtime" /></template>
       </q-btn-toggle>
       <q-btn
         v-if="user.isLogged"
@@ -63,6 +59,7 @@ const navigateMain = () => {
         icon="svguse:src/shared/assets/man.svg#man| 0 0 100 100"
         :label="user.getLogin"
         :ripple="false"
+        data-test="name"
       />
       <q-btn
         v-if="user.isLogged && user.canManageUsersAndRoles"
@@ -71,6 +68,7 @@ const navigateMain = () => {
         icon="svguse:src/shared/assets/gear.svg#gear| 0 0 16 16"
         :ripple="false"
         to="admin"
+        data-test="admin"
       />
       <q-btn
         v-if="user.isLogged"
@@ -79,6 +77,7 @@ const navigateMain = () => {
         label="Выйти"
         class="btn btn-stroke small"
         @click="handleLogout"
+        data-test="logout"
       />
     </q-toolbar>
   </q-header>

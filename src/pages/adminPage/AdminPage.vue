@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { Column } from '@/shared/model'
-import { getAllAccesses, type Access } from '@/entities/accsses'
+import { getAllAccesses, readableAccess, type Access } from '@/entities/accsses'
 import { type Role, deleteRole, getAllRoles, patchRole } from '@/entities/role'
 import { type User, patchUser, deleteUser, getAllUsers } from '@/entities/user'
 import { getErrorByCode, showError } from '@/features/showError'
@@ -36,8 +36,10 @@ const userCoulumns = ref<Column[]>([
   { field: 'roles', name: 'roles', label: 'Роли', align: 'left' },
 ])
 
+const authorities = ref<Access[]>([])
+
 const roleSelectOptions = ref<string[]>(roles.value.map((v) => v.name))
-const authoritiesSelectOptions = ref<string[]>([])
+const authoritiesSelectOptions = ref<string[]>(authorities.value.map((a) => a.name))
 
 const handleCreateRolePopup = () => {
   $q.dialog({
@@ -64,9 +66,10 @@ const handleUpdate = () => {
   Promise.all([rolesPromise, accessesPromise, usersPromise])
     .then((r) => {
       roles.value = r[0]
-      authoritiesSelectOptions.value = r[1].map((v: Access) => v.name)
+      authorities.value = r[1]
       usersData.value = r[2]
       roleSelectOptions.value = roles.value.map((v) => v.name)
+      authoritiesSelectOptions.value = authorities.value.map((a) => a.name)
     })
     .catch((r) => showError(getErrorByCode(r)))
 }
@@ -85,9 +88,9 @@ const handleDeleteRoleFromUser = (user: User, roleName: string) =>
 const handleAddRoleToUser = (user: User, roleName: string) =>
   patchUser(user, roles.value.find((r) => r.name == roleName)?.id ?? -1, true)
 const handleDeleteAccessFromRole = (role: Role, accessName: string) =>
-  patchRole(role, authoritiesSelectOptions.value.indexOf(accessName), false)
+  patchRole(role, authorities.value.find((a) => a.name === accessName)?.id ?? -1, false)
 const handleAddAccessToRole = (role: Role, accessName: string) =>
-  patchRole(role, authoritiesSelectOptions.value.indexOf(accessName), true)
+  patchRole(role, authorities.value.find((a) => a.name === accessName)?.id ?? -1, true)
 
 onBeforeMount(() => {
   handleUpdate()
@@ -109,8 +112,8 @@ onBeforeMount(() => {
               :columns="userCoulumns"
               :rows="usersData"
               :options="roleSelectOptions"
+              :option-label="(username) => username"
               @-add="handleCreateUserPopup"
-              @-update="handleUpdate"
               @delete="handleDeleteUser"
               @remove-role="handleDeleteRoleFromUser"
               @add-role="handleAddRoleToUser"
@@ -121,8 +124,8 @@ onBeforeMount(() => {
               :columns="rolesColumns"
               :rows="roles"
               :options="authoritiesSelectOptions"
+              :option-label="(role) => readableAccess(role)"
               @-add="handleCreateRolePopup"
-              @-update="handleUpdate"
               @delete="handleDeleteRole"
               @remove-role="handleDeleteAccessFromRole"
               @add-role="handleAddAccessToRole"

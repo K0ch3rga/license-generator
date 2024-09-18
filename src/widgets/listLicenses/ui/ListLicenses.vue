@@ -1,10 +1,5 @@
 <script setup lang="ts">
-import {
-  getAllLicenses,
-  type License,
-  getLicenseFile,
-  getDigestFile,
-} from '@/entities/license'
+import { getAllLicenses, type License, getLicenseFile, getDigestFile } from '@/entities/license'
 import { exportTable } from '../model'
 import { type Column } from '@/shared/model'
 import { onMounted, ref } from 'vue'
@@ -26,20 +21,15 @@ const refreshLicenses = () => {
     .catch((e) => showError(e))
     .finally(() => (loading.value = false))
 }
-onMounted(refreshLicenses)
 
 const downloadLicenseFile = (id: string) => {
   if (!user.canDownloadFile) return
-  getLicenseFile(id).then((r) =>
-    exportFile(r.filename ?? 'license file.txt', r.blob)
-  )
+  getLicenseFile(id).then((r) => exportFile(r.filename ?? 'license file.txt', r.blob))
 }
 
 const downloadDigestFile = (id: string) => {
   if (!user.canDownloadFile) return
-  getDigestFile(id).then((r) =>
-    exportFile(r.filename ?? 'digest file.txt', r.blob)
-  )
+  getDigestFile(id).then((r) => exportFile(r.filename ?? 'digest file.txt', r.blob))
 }
 
 const columns: Column[] = [
@@ -67,9 +57,7 @@ const columns: Column[] = [
     align: 'left',
     required: true,
     sortable: true,
-    //TODO Перенести сортировку в api // Я запутался зачем она в api, это же метод для сортировки в таблице
-    sort: (a, b, aRow, bRow) =>
-      aRow['expirationTime'].getTime() - bRow['expirationTime'].getTime(),
+    sort: (a, b, aRow, bRow) => aRow['expirationTime'].getTime() - bRow['expirationTime'].getTime(),
   },
   {
     name: 'digest',
@@ -88,14 +76,10 @@ const columns: Column[] = [
     sortable: true,
   },
 ]
+onMounted(refreshLicenses)
 </script>
 <template>
-  <q-input
-    outlined
-    class="q-mx-md text-input"
-    placeholder="Поиск"
-    v-model="filter"
-  >
+  <q-input outlined class="q-mx-md text-input" placeholder="Поиск" v-model="filter">
     <template v-slot:append>
       <q-icon size="10.5px" name="img:src/shared/assets/search.svg" />
     </template>
@@ -120,7 +104,7 @@ const columns: Column[] = [
         flat
         class="btn btn-stroke small"
         label="Экспорт в csv"
-        no-caps
+        no-capsF
         @click="() => exportTable(licenses, columns)"
       />
     </template>
@@ -134,10 +118,7 @@ const columns: Column[] = [
         {{ props.value }}
       </q-td>
     </template>
-    <template
-      v-slot:body-cell-licenseFile="props"
-      v-else-if="!user.canDownloadFile"
-    >
+    <template v-slot:body-cell-licenseFile="props" v-else-if="!user.canDownloadFile">
       <q-td key="licenseFile" :props="props">
         {{ props.value }}
       </q-td>

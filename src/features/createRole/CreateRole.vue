@@ -16,22 +16,25 @@ const handleSubmit = () => {
 </script>
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
-    <q-card flat class="popup q-pa-md">
-      <label>Название роли</label>
-      <q-input
-        dense
-        outlined
-        autofocus
-        class="text-input"
-        placeholder="Введите название"
-        v-model="name"
-        lazy-rules
-        :rules="[(v) => !!v]"
-        no-error-icon
-        hide-bottom-space
-        @keyup.enter.prevent="handleSubmit"
-      />
-      <div class="flex justify-end">
+    <q-card flat class="popup">
+      <q-card-section class="text-h3">Создание новой роли</q-card-section>
+      <q-card-section class="q-py-xs">
+        <label>Название роли</label>
+        <q-input
+          dense
+          outlined
+          autofocus
+          class="text-input"
+          placeholder="Введите название"
+          v-model="name"
+          lazy-rules
+          :rules="[(v) => !!v]"
+          no-error-icon
+          hide-bottom-space
+          @keyup.enter.prevent="handleSubmit"
+        />
+      </q-card-section>
+      <q-card-actions class="flex justify-end">
         <q-btn
           outlined
           flat
@@ -39,7 +42,7 @@ const handleSubmit = () => {
           label="Сохранить"
           @click="handleSubmit"
         />
-      </div>
+      </q-card-actions>
     </q-card>
   </q-dialog>
 </template>
