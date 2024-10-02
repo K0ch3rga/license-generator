@@ -154,6 +154,7 @@ const uploadFile = () => {
           class="q-mb-sm file-upload"
           v-model="file"
           ref="fileUploader"
+          :rules="[(v: string) => !!v]"
         >
           <template v-slot:after>
             <q-btn

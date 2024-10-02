@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useQuasar } from 'quasar'
-import { onMounted } from 'vue'
+import { onBeforeMount } from 'vue'
 
-onMounted(() => {
+onBeforeMount(() => {
   const $q = useQuasar()
 
   const theme = $q.cookies.get('theme')

@@ -5,7 +5,7 @@ import { type Column } from '@/shared/model'
 import { onMounted, ref } from 'vue'
 import { exportFile, date } from 'quasar'
 import { useUserStore } from '@/entities/user'
-import { showError } from '@/features/showError'
+import { showError, getErrorByCode } from '@/features/showError'
 
 const licenses = ref<License[]>([])
 const loading = ref(false)
@@ -18,7 +18,7 @@ const refreshLicenses = () => {
   loading.value = true
   getAllLicenses()
     .then((l) => (licenses.value = l))
-    .catch((e) => showError(e))
+    .catch((e) => showError(getErrorByCode(e)))
     .finally(() => (loading.value = false))
 }
 

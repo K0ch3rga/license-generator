@@ -35,14 +35,6 @@ const router = createRouter({ routes, history: createWebHistory() })
 
 router.beforeEach((to, from) => {
   const user = useUserStore()
-  console.log(to)
-  console.log(
-    'login: ',
-    user.getLogin,
-    typeof user.getLogin,
-    '\nlogged: ',
-    user.isLogged
-  )
   if (to.meta.requiresAuth && !user.isLogged) return { name: 'login' }
   if (to.name == 'login' && user.isLogged) return { name: 'main' }
   if (to.meta.adminOnly && !user.canManageUsersAndRoles) return from

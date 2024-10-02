@@ -2,11 +2,11 @@
 import { useUserStore } from '@/entities/user'
 import { GenerateLicense } from '@/features/generateLicense'
 import { useQuasar } from 'quasar'
-import { ref } from 'vue'
+import { onBeforeMount, onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
-const theme = ref($q.dark.isActive)
+const theme = ref<boolean>(true)
 const emits = defineEmits<{ licenseGenerated: [] }>()
 
 const toggleTheme = () => {
@@ -26,6 +26,9 @@ const handleLogout = () => {
 const navigateMain = () => {
   routes.push({ name: 'main' })
 }
+onBeforeMount(() => {
+  theme.value = $q.dark.isActive
+})
 </script>
 <template>
   <q-header class="q-px-lg q-py-lg" data-test="header">
