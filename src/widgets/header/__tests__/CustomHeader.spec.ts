@@ -75,7 +75,6 @@ describe('Header with generate rights', () => {
 
   it('has Generate button', () => {
     const wrapper = mount(Header)
-    console.log(wrapper)
     const component = wrapper.find('[data-test="generate"]').exists()
     expect(component).toBe(true)
   })

@@ -4,7 +4,7 @@ import { getPublicKey } from '@/shared/api/getPublicKey'
 import { encrypt } from '@/shared/model'
 import { useDialogPluginComponent } from 'quasar'
 import { ref } from 'vue'
-import { getErrorByCode } from '../showError'
+import { getErrorByCode, showError } from '../showError'
 const { dialogRef, onDialogHide, onDialogOK } = useDialogPluginComponent()
 
 const login = ref<string>('')
@@ -15,14 +15,13 @@ defineEmits([...useDialogPluginComponent.emits])
 
 const handleSubmit = async () => {
   const key = (await getPublicKey()) ?? ''
-  console.log(key)
   const encryptedPassword = encrypt(
     password.value,
     key
     // 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYgYmmAZqr+BPDXfYhCOYGZJFzBEjD9yqOlBSTlbFe6rw6DJoiWc/H4ibWu53ViLrj+th2vWFiS7VUIME2z/0ASjuo8JgN97z8huTjztTpemzksOX0Y4OkRDc+D+KfMW3iJATjTgTovIVuvhF0c/utuiY9aDqDuQyKVIL+APpHywIDAQAB'
   )
   if (encryptedPassword === false || !encryptedPassword) {
-    console.log(getErrorByCode(500))
+    showError(getErrorByCode(500))
     return
   }
 

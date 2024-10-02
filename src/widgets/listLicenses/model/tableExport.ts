@@ -35,7 +35,6 @@ export const exportTable = (rows: any[], columns: Column[]) => {
       )
     )
     .join('\r\n')
-  console.log(content)
 
   const status = exportFile('table-export.csv', content, {
     encoding: 'utf-8',

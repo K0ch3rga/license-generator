@@ -37,7 +37,6 @@ const handleLogin = async () => {
         expires: new Date(time).toUTCString(),
       })
       user.setUserFromJWT(userInfo)
-      console.log(decodeJwt<UserInfo>(t.access_token))
       routes.replace({ name: 'main' })
     })
     .catch((e) => showError(getErrorByCode(e)))

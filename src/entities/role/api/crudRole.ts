@@ -4,7 +4,7 @@ import { type NewRoleDTO, type RoleDto, type Role, RoleDtoToRole } from '../mode
 
 export const createRole = async (role: NewRoleDTO): Promise<Role> => {
   try {
-    return await fetch(BACKEND_CONNECTION + 'roles/', {
+    return await fetch(BACKEND_CONNECTION + 'roles', {
       method: 'POST',
       headers: {
         Authorization: 'Bearer ' + Cookies.get('session'),
