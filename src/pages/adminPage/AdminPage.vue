@@ -10,9 +10,10 @@ import { RoleAssignmentList } from '@/widgets/roleAssignmentList'
 import { Header } from '@/widgets/header'
 import { onBeforeMount, ref } from 'vue'
 import { useQuasar } from 'quasar'
+import { SoftwareList } from '@/entities/software'
 
 const $q = useQuasar()
-const tab = ref<'users' | 'roles'>('users')
+const tab = ref<'users' | 'roles' | 'software'>('users')
 
 const roles = ref<Role[]>([])
 const rolesColumns = ref<Column[]>([
@@ -104,6 +105,7 @@ onBeforeMount(() => {
         <q-tabs align="left" narrow-indicator dense v-model="tab">
           <q-tab :ripple="false" class="menu-item text-body1" name="users" label="Пользователи" />
           <q-tab :ripple="false" class="menu-item text-body1" name="roles" label="Роли" />
+          <q-tab :ripple="false" class="menu-item text-body1" name="software" label="ПО" />
         </q-tabs>
         <q-separator />
         <q-tab-panels v-model="tab" keep-alive>
@@ -130,6 +132,9 @@ onBeforeMount(() => {
               @remove-role="handleDeleteAccessFromRole"
               @add-role="handleAddAccessToRole"
             />
+          </q-tab-panel>
+          <q-tab-panel name="software">
+            <SoftwareList :rows="[{ name: 'oleg', options: [], path: '/var/oleg' }]" />
           </q-tab-panel>
         </q-tab-panels>
       </q-card>
