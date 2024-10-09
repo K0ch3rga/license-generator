@@ -8,6 +8,7 @@ const $q = useQuasar()
 const popupVisible = ref<boolean>(false)
 const loading = ref<boolean>(false)
 const file = ref<File>()
+const softwareType = ref<string>()
 const product = ref<string>('')
 const company = ref<string>('')
 const expirationDate = ref<string>(
@@ -17,6 +18,8 @@ const endless = ref<boolean>(false)
 const userCount = ref<number>(1)
 const fileUploader = ref() as Ref<QFile>
 const additionalData = ref<Map<string, string>>(new Map<string, string>())
+
+const fileError = ref<boolean>(false)
 
 const emits = defineEmits<{ AddLicense: [] }>()
 
@@ -32,7 +35,10 @@ const handleMapOpen = () => {
 }
 
 const handleSubmit = async () => {
-  if (!file.value) return
+  if (!file.value) {
+    fileError.value = true
+    return
+  }
   loading.value = true
   generateLicense(file.value, {
     company_name: company.value,
@@ -80,6 +86,17 @@ const uploadFile = () => {
     <q-card flat class="popup q-pa-sm" v-show="popupVisible">
       <q-card-section class="text-h3">Создать новую лицензию</q-card-section>
       <q-card-section class="q-py-xs flex column">
+        <label>Программное обеспечение</label>
+        <q-select
+          :options="['a', 'bb']"
+          v-model="softwareType"
+          rounded
+          outlined
+          dense
+          hide-bottom-space
+          menu-anchor="top left"
+          class="q-my-xs select text-body1"
+        />
         <label>Название компании</label>
         <q-input
           outlined
@@ -99,16 +116,6 @@ const uploadFile = () => {
           no-error-icon
           hide-bottom-space
           :rules="[(v: string) => !!v]"
-        />
-        <label>Количество пользователей</label>
-        <q-input
-          outlined
-          class="text-input q-mb-sm"
-          placeholder="Введите количество пользователей"
-          v-model="userCount"
-          no-error-icon
-          hide-bottom-space
-          :rules="[(v: string) => !!v, (v: string | number) => !isNaN(v as number)]"
         />
         <label>Дата окончания</label>
         <q-input
@@ -155,6 +162,7 @@ const uploadFile = () => {
           v-model="file"
           ref="fileUploader"
           :rules="[(v: string) => !!v]"
+          :error="fileError"
         >
           <template v-slot:after>
             <q-btn
