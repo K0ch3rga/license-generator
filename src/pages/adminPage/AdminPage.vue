@@ -13,6 +13,7 @@ import {
 import { getErrorByCode, showError } from '@/features/showError'
 import { CreateRole } from '@/features/createRole'
 import { CreateUser } from '@/features/createUser'
+import { CreateSoftwarePopup } from '@/features/createSoftware'
 import { RoleAssignmentList } from '@/widgets/roleAssignmentList'
 import { Header } from '@/widgets/header'
 import { onBeforeMount, ref } from 'vue'
@@ -70,7 +71,7 @@ const handleCreateUserPopup = () => {
 }
 
 const handleCreateSoftwarePopup = () => {
-  $q.dialog({ component: CreateUser }).onOk((payload: Promise<Software>) =>
+  $q.dialog({ component: CreateSoftwarePopup }).onOk((payload: Promise<Software>) =>
     payload.then((s) => (softwareData.value = softwareData.value.concat(s)))
   )
 }
