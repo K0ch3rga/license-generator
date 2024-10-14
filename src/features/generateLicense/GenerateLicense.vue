@@ -1,12 +1,14 @@
 <script setup lang="ts">
 import { generateLicense, type NewLicenseDto } from '@/entities/license'
 import { exportFile, date, type QFile, useQuasar } from 'quasar'
-import { ref, type Ref } from 'vue'
+import { onBeforeMount, ref, type Ref } from 'vue'
 import { getErrorByCode, showError } from '../showError'
 import { MapPopup } from '@/shared/ui'
+import { getAllSoftwares, type Software } from '@/entities/software'
 const $q = useQuasar()
 const popupVisible = ref<boolean>(false)
 const loading = ref<boolean>(false)
+const softwares = ref<Software[]>([])
 const file = ref<File>()
 const softwareType = ref<string>()
 const product = ref<string>('')
@@ -17,6 +19,7 @@ const expirationDate = ref<string>(
 const endless = ref<boolean>(false)
 const userCount = ref<number>(1)
 const fileUploader = ref() as Ref<QFile>
+const required_attributes = ref<string[]>([])
 const additionalData = ref<Map<string, string>>(new Map<string, string>())
 
 const fileError = ref<boolean>(false)
@@ -49,6 +52,7 @@ const handleSubmit = async () => {
       : (date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'YYYY-MM-DD') ??
         undefined),
     additional_license_information: JSON.stringify(Object.fromEntries(additionalData.value)),
+    required_attributes: required_attributes.value,
   } as NewLicenseDto)
     .then((downloadedFile) => {
       emits('AddLicense')
@@ -80,6 +84,12 @@ const uploadFile = () => {
   // document.getElementById('fileUpload')?.click()
   fileUploader.value.pickFiles()
 }
+
+onBeforeMount(() => {
+  getAllSoftwares()
+    .then((s) => (softwares.value = s))
+    .catch((e) => showError(getErrorByCode(e)))
+})
 </script>
 <template>
   <q-dialog v-model="popupVisible">
@@ -88,7 +98,8 @@ const uploadFile = () => {
       <q-card-section class="q-py-xs flex column">
         <label>Программное обеспечение</label>
         <q-select
-          :options="['a', 'bb']"
+          :options="softwares.map((s) => s.company_name)"
+          :rules="[(v: string) => !!v]"
           v-model="softwareType"
           rounded
           outlined
@@ -153,6 +164,21 @@ const uploadFile = () => {
         <q-field borderless dense class="field">
           <q-checkbox v-model="endless" label="Бессрочно" class="checkbox" />
         </q-field>
+        <div
+          v-for="(option, index) in softwares.filter((s) => s.company_name == softwareType)[0]
+            ?.required_attributes"
+          :key="option"
+        >
+          <label>{{ option }}</label>
+          <q-input
+            outlined
+            class="text-input q-mb-sm"
+            v-model="required_attributes[index]"
+            no-error-icon
+            hide-bottom-space
+            :rules="[(v: string) => !!v]"
+          />
+        </div>
         <label>Файл аппаратных ресурсов</label>
         <q-file
           for="fileUpload"
