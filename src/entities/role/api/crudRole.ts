@@ -24,7 +24,7 @@ export const createRole = async (role: NewRoleDTO): Promise<Role> => {
 
 export const deleteRole = async (role: Role): Promise<Role> => {
   try {
-    return await fetch(BACKEND_CONNECTION + 'roles?id=' + role.id, {
+    return await fetch(BACKEND_CONNECTION + 'roles/' + role.id, {
       method: 'DELETE',
       headers: {
         Authorization: 'Bearer ' + Cookies.get('session'),

@@ -24,7 +24,7 @@ export const createSoftware = async (software: NewSoftwareDto): Promise<Software
 
 export const deleteSoftware = async (software: Software): Promise<Software> => {
   try {
-    return await fetch(BACKEND_CONNECTION + 'software?id=' + software.id, {
+    return await fetch(BACKEND_CONNECTION + 'software/' + software.id, {
       method: 'DELETE',
       headers: {
         Authorization: 'Bearer ' + Cookies.get('session'),

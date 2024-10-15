@@ -43,6 +43,14 @@ const handleSubmit = async () => {
     return
   }
   loading.value = true
+  let i = 0
+  console.log(softwares.value.filter((v) => v.company_name == softwareType.value)?.[0])
+  for (const option of softwares.value.filter((v) => v.company_name == softwareType.value)?.[0]
+    .required_attributes ?? []) {
+    console.log(option)
+    additionalData.value.set(option, required_attributes.value[i])
+    i++
+  }
   generateLicense(file.value, {
     company_name: company.value,
     product_name: product.value,
@@ -52,7 +60,6 @@ const handleSubmit = async () => {
       : (date.formatDate(date.extractDate(expirationDate.value, 'D.M.YYYY'), 'YYYY-MM-DD') ??
         undefined),
     additional_license_information: JSON.stringify(Object.fromEntries(additionalData.value)),
-    required_attributes: required_attributes.value,
   } as NewLicenseDto)
     .then((downloadedFile) => {
       emits('AddLicense')
@@ -69,6 +76,7 @@ const handleSubmit = async () => {
   company.value = ''
   userCount.value = 1
   expirationDate.value = date.formatDate(date.addToDate(new Date(), { months: 1 }), 'D.M.YYYY')
+  additionalData.value = new Map<string, string>()
 }
 
 const ruLocale = {

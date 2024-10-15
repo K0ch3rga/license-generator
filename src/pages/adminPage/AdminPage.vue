@@ -103,7 +103,9 @@ const handleDeleteUser = async (user: User[]) => {
   handleUpdate()
 }
 const handleDeleteSoftware = async (softwares: Software[]) => {
-  Promise.all(softwares.map((s) => deleteSoftware(s))).catch((e) => showError(getErrorByCode(e)))
+  await Promise.all(softwares.map((s) => deleteSoftware(s))).catch((e) =>
+    showError(getErrorByCode(e))
+  )
   handleUpdate()
 }
 
