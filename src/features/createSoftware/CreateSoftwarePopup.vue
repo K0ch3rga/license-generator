@@ -21,15 +21,15 @@ const handleSubmit = async () => {
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogHide">
     <q-card flat class="popup">
-      <q-card-section class="text-h3"> Регистрация нового пользователя </q-card-section>
+      <q-card-section class="text-h3"> Добавление нового программного обеспечения </q-card-section>
       <q-card-section class="q-py-xs">
-        <label>Название компании</label>
+        <label>Название ПО</label>
         <q-input
           dense
           outlined
           autofocus
           class="text-input"
-          placeholder="Введите название компании"
+          placeholder="Введите название программного обеспечения"
           v-model="company_name"
           :rules="[(v) => !!v]"
           no-error-icon
