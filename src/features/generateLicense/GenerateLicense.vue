@@ -19,7 +19,8 @@ const expirationDate = ref<string>(
 const endless = ref<boolean>(false)
 const userCount = ref<number>(1)
 const fileUploader = ref() as Ref<QFile>
-const required_attributes = ref<string[]>([])
+const requiredAttributes = ref<string[]>([])
+const requiredAttributesErrors = ref<boolean[]>([])
 const additionalData = ref<Map<string, string>>(new Map<string, string>())
 
 const fileError = ref<boolean>(false)
@@ -42,13 +43,17 @@ const handleSubmit = async () => {
     fileError.value = true
     return
   }
+  const options =
+    softwares.value.filter((v) => v.company_name == softwareType.value)?.[0].required_attributes ??
+    []
+  if (options.length != requiredAttributes.value.length) {
+    requiredAttributesErrors.value = new Array(options.length).fill(true)
+    return
+  }
   loading.value = true
   let i = 0
-  console.log(softwares.value.filter((v) => v.company_name == softwareType.value)?.[0])
-  for (const option of softwares.value.filter((v) => v.company_name == softwareType.value)?.[0]
-    .required_attributes ?? []) {
-    console.log(option)
-    additionalData.value.set(option, required_attributes.value[i])
+  for (const option of options) {
+    additionalData.value.set(option, requiredAttributes.value[i])
     i++
   }
   generateLicense(file.value, {
@@ -181,7 +186,8 @@ onBeforeMount(() => {
           <q-input
             outlined
             class="text-input q-mb-sm"
-            v-model="required_attributes[index]"
+            v-model="requiredAttributes[index]"
+            :error="requiredAttributesErrors[index]"
             no-error-icon
             hide-bottom-space
             :rules="[(v: string) => !!v]"
@@ -197,6 +203,7 @@ onBeforeMount(() => {
           ref="fileUploader"
           :rules="[(v: string) => !!v]"
           :error="fileError"
+          :no-error-icon="false"
         >
           <template v-slot:after>
             <q-btn
