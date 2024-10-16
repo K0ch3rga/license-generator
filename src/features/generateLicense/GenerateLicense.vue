@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import { generateLicense, type NewLicenseDto } from '@/entities/license'
-import { exportFile, date, type QFile, useQuasar } from 'quasar'
-import { onBeforeMount, ref, type Ref } from 'vue'
+import { exportFile, date, type QFile, useQuasar, QForm } from 'quasar'
+import { onBeforeMount, ref } from 'vue'
 import { getErrorByCode, showError } from '../showError'
 import { MapPopup } from '@/shared/ui'
 import { getAllSoftwares, type Software } from '@/entities/software'
 const $q = useQuasar()
 const popupVisible = ref<boolean>(false)
 const loading = ref<boolean>(false)
-const softwares = ref<Software[]>([])
+const allSoftwares = ref<Software[]>([])
 const file = ref<File>()
-const softwareType = ref<string>()
+const chosenSoftwareType = ref<Software[]>([])
 const product = ref<string>('')
 const company = ref<string>('')
 const expirationDate = ref<string>(
@@ -18,12 +18,11 @@ const expirationDate = ref<string>(
 )
 const endless = ref<boolean>(false)
 const userCount = ref<number>(1)
-const fileUploader = ref() as Ref<QFile>
+const fileUploader = ref<QFile>()
 const requiredAttributes = ref<string[]>([])
-const requiredAttributesErrors = ref<boolean[]>([])
 const additionalData = ref<Map<string, string>>(new Map<string, string>())
 
-const fileError = ref<boolean>(false)
+const form = ref<QForm>()
 
 const emits = defineEmits<{ AddLicense: [] }>()
 
@@ -39,23 +38,24 @@ const handleMapOpen = () => {
 }
 
 const handleSubmit = async () => {
-  if (!file.value) {
-    fileError.value = true
+  if (!(await form.value?.validate()) || !file.value) {
     return
   }
-  const options =
-    softwares.value.filter((v) => v.company_name == softwareType.value)?.[0].required_attributes ??
-    []
-  if (options.length != requiredAttributes.value.length) {
-    requiredAttributesErrors.value = new Array(options.length).fill(true)
-    return
-  }
+
   loading.value = true
-  let i = 0
-  for (const option of options) {
-    additionalData.value.set(option, requiredAttributes.value[i])
-    i++
+  if (chosenSoftwareType.value[0]) {
+    additionalData.value.set('company_name', chosenSoftwareType.value[0].company_name)
+    additionalData.value.set(
+      'license_generator_path',
+      chosenSoftwareType.value[0].license_generator_path
+    )
+    let i = 0
+    for (const option of chosenSoftwareType.value[0].required_attributes) {
+      additionalData.value.set(option, requiredAttributes.value[i])
+      i++
+    }
   }
+
   generateLicense(file.value, {
     company_name: company.value,
     product_name: product.value,
@@ -81,6 +81,7 @@ const handleSubmit = async () => {
   company.value = ''
   userCount.value = 1
   expirationDate.value = date.formatDate(date.addToDate(new Date(), { months: 1 }), 'D.M.YYYY')
+  requiredAttributes.value = new Array<string>()
   additionalData.value = new Map<string, string>()
 }
 
@@ -95,12 +96,12 @@ const ruLocale = {
 
 const uploadFile = () => {
   // document.getElementById('fileUpload')?.click()
-  fileUploader.value.pickFiles()
+  fileUploader.value?.pickFiles()
 }
 
 onBeforeMount(() => {
   getAllSoftwares()
-    .then((s) => (softwares.value = s))
+    .then((s) => (allSoftwares.value = s))
     .catch((e) => showError(getErrorByCode(e)))
 })
 </script>
@@ -108,129 +109,130 @@ onBeforeMount(() => {
   <q-dialog v-model="popupVisible">
     <q-card flat class="popup q-pa-sm" v-show="popupVisible">
       <q-card-section class="text-h3">Создать новую лицензию</q-card-section>
-      <q-card-section class="q-py-xs flex column">
-        <label>Программное обеспечение</label>
-        <q-select
-          :options="softwares.map((s) => s.company_name)"
-          :rules="[(v: string) => !!v]"
-          v-model="softwareType"
-          rounded
-          outlined
-          dense
-          hide-bottom-space
-          menu-anchor="top left"
-          class="q-my-xs select text-body1"
-        />
-        <label>Название компании</label>
-        <q-input
-          outlined
-          class="text-input q-mb-sm"
-          placeholder="Введите название компании"
-          v-model="company"
-          no-error-icon
-          hide-bottom-space
-          :rules="[(v: string) => !!v]"
-        />
-        <label>Название продукта</label>
-        <q-input
-          outlined
-          class="text-input q-mb-sm"
-          placeholder="Введите название продукта"
-          v-model="product"
-          no-error-icon
-          hide-bottom-space
-          :rules="[(v: string) => !!v]"
-        />
-        <label>Дата окончания</label>
-        <q-input
-          v-model="expirationDate"
-          :disable="endless"
-          :rules="[
-            (v: string) => /^[0-3]?\d\.[0-1]?\d\.[\d]+$/.test(v),
-            (v: string) => date.extractDate(v, 'D.M.YYYY').getTime() > new Date().getTime(),
-          ]"
-          placeholder="Введите дату окончания"
-          outlined
-          class="text-input"
-          hide-bottom-space
-          no-error-icon
-        >
-          <template v-slot:append>
-            <q-icon size="14px" name="img:src/shared/assets/calendar.svg" class="cursor-pointer">
-              <q-popup-proxy cover transition-show="scale" transition-hide="scale">
-                <q-date
-                  v-model="expirationDate"
-                  mask="D.M.YYYY"
-                  minimal
-                  first-day-of-week="1"
-                  class="date-input"
-                  :locale="ruLocale"
-                >
-                  <div class="row items-center justify-end">
-                    <q-btn v-close-popup label="Закрыть" class="btn btn-fill" flat />
-                  </div>
-                </q-date>
-              </q-popup-proxy>
-            </q-icon>
-          </template>
-        </q-input>
-        <q-field borderless dense class="field">
-          <q-checkbox v-model="endless" label="Бессрочно" class="checkbox" />
-        </q-field>
-        <div
-          v-for="(option, index) in softwares.filter((s) => s.company_name == softwareType)[0]
-            ?.required_attributes"
-          :key="option"
-        >
-          <label>{{ option }}</label>
+      <q-form ref="form" @submit="handleSubmit">
+        <q-card-section class="q-py-xs flex column">
+          <label>Программное обеспечение</label>
+          <q-select
+            :options="allSoftwares"
+            :option-label="(v: Software) => v.company_name"
+            v-model="chosenSoftwareType"
+            multiple
+            max-values="1"
+            rounded
+            outlined
+            dense
+            hide-bottom-space
+            menu-anchor="top left"
+            class="q-my-xs select text-body1"
+          />
+          <label>Название компании</label>
           <q-input
             outlined
             class="text-input q-mb-sm"
-            v-model="requiredAttributes[index]"
-            :error="requiredAttributesErrors[index]"
+            placeholder="Введите название компании"
+            v-model="company"
             no-error-icon
             hide-bottom-space
             :rules="[(v: string) => !!v]"
           />
-        </div>
-        <label>Файл аппаратных ресурсов</label>
-        <q-file
-          for="fileUpload"
-          outlined
-          dense
-          class="q-mb-sm file-upload"
-          v-model="file"
-          ref="fileUploader"
-          :rules="[(v: string) => !!v]"
-          :error="fileError"
-          :no-error-icon="false"
-        >
-          <template v-slot:after>
-            <q-btn
-              flat
-              :ripple="false"
-              label="Выбрать файл"
-              class="btn btn-stroke small"
-              @click="uploadFile"
+          <label>Название продукта</label>
+          <q-input
+            outlined
+            class="text-input q-mb-sm"
+            placeholder="Введите название продукта"
+            v-model="product"
+            no-error-icon
+            hide-bottom-space
+            :rules="[(v: string) => !!v]"
+          />
+          <label>Дата окончания</label>
+          <q-input
+            v-model="expirationDate"
+            :disable="endless"
+            :rules="[
+              (v: string) => /^[0-3]?\d\.[0-1]?\d\.[\d]+$/.test(v),
+              (v: string) => date.extractDate(v, 'D.M.YYYY').getTime() > new Date().getTime(),
+            ]"
+            placeholder="Введите дату окончания"
+            outlined
+            class="text-input"
+            hide-bottom-space
+            no-error-icon
+          >
+            <template v-slot:append>
+              <q-icon size="14px" name="img:src/shared/assets/calendar.svg" class="cursor-pointer">
+                <q-popup-proxy cover transition-show="scale" transition-hide="scale">
+                  <q-date
+                    v-model="expirationDate"
+                    mask="D.M.YYYY"
+                    minimal
+                    first-day-of-week="1"
+                    class="date-input"
+                    :locale="ruLocale"
+                  >
+                    <div class="row items-center justify-end">
+                      <q-btn v-close-popup label="Закрыть" class="btn btn-fill" flat />
+                    </div>
+                  </q-date>
+                </q-popup-proxy>
+              </q-icon>
+            </template>
+          </q-input>
+          <q-field borderless dense class="field">
+            <q-checkbox v-model="endless" label="Бессрочно" class="checkbox" />
+          </q-field>
+          <div
+            v-for="(option, index) in chosenSoftwareType?.[0]?.required_attributes"
+            :key="option"
+          >
+            <label>{{ option }}</label>
+            <q-input
+              outlined
+              class="text-input q-mb-sm"
+              v-model="requiredAttributes[index]"
+              no-error-icon
+              hide-bottom-space
+              :rules="[(v: string) => !!v]"
             />
-          </template>
-        </q-file>
-        <q-btn
-          flat
-          :ripple="false"
-          class="btn btn-stroke text-button small"
-          label="Добавить значения"
-          @click="handleMapOpen"
-        />
+          </div>
+          <label>Файл аппаратных ресурсов</label>
+          <q-file
+            for="fileUpload"
+            outlined
+            dense
+            class="q-mb-sm file-upload"
+            v-model="file"
+            ref="fileUploader"
+            :rules="[(v: string) => !!v]"
+            no-error-icon
+          >
+            <template v-slot:after>
+              <q-btn
+                flat
+                :ripple="false"
+                label="Выбрать файл"
+                class="btn btn-stroke small"
+                @click="uploadFile"
+              />
+            </template>
+          </q-file>
+          <q-btn
+            flat
+            :ripple="false"
+            class="btn btn-stroke text-button small"
+            label="Добавить значения"
+            @click="handleMapOpen"
+          />
 
-        <q-btn
-          flat
-          :ripple="false"
-          class="btn btn-fill text-button medium q-mt-lg"
-          label="Подтвердить"
-          @click="handleSubmit"
-        />
-      </q-card-section>
+          <q-btn
+            flat
+            :ripple="false"
+            class="btn btn-fill text-button medium q-mt-lg"
+            label="Подтвердить"
+            type="submit"
+          />
+        </q-card-section>
+      </q-form>
     </q-card>
   </q-dialog>
   <q-btn
