@@ -2,7 +2,7 @@
 import { useUserStore } from '@/entities/user'
 import { GenerateLicense } from '@/features/generateLicense'
 import { useQuasar } from 'quasar'
-import { onBeforeMount, onMounted, ref } from 'vue'
+import { onBeforeMount, ref } from 'vue'
 import { useRouter } from 'vue-router'
 
 const $q = useQuasar()
@@ -58,7 +58,7 @@ onBeforeMount(() => {
       <q-btn
         v-if="user.isLogged"
         flat
-        class="btn btn-link small text-button"
+        class="btn btn-link small text-button login"
         icon="svguse:src/shared/assets/man.svg#man| 0 0 100 100"
         :label="user.getLogin"
         :ripple="false"
@@ -91,4 +91,9 @@ onBeforeMount(() => {
 
 .clickable-title
   cursor: pointer
+
+.btn.login 
+  cursor: default
+  &:hover
+    color: var(--blue1)
 </style>
