@@ -48,6 +48,7 @@ export const getAllLicenses = async (): Promise<License[]> => {
             licenseNumber: l.id.toString(),
             machineDigestFile: l.machine_digest_file,
             productName: l.product_name,
+            additionalInfo: JSON.parse(l.additional_license_information)
           })
         )
       )

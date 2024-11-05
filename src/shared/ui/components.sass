@@ -155,18 +155,22 @@ body
   &.body--dark.body--dark
     background: var(--background)
 
-.q-chip.q-chip.error
-  height: 24px
-  width: 242px
-  margin-right: 0
-  margin-left: 0
-  border: $border-width solid currentColor
-  border-radius: $border-radius
-  &.error-label
-    color: var(--red)
-  .q-chip__icon--left
-    color: inherit
-    font-size: 1em
+.q-chip
+  &.chip.chip
+    border-radius: 8px
+    border: 1px solid var(--blue1)
+  &.q-chip.error
+    height: 24px
+    width: 242px
+    margin-right: 0
+    margin-left: 0
+    border: $border-width solid currentColor
+    border-radius: $border-radius
+    &.error-label
+      color: var(--red)
+    .q-chip__icon--left
+      color: inherit
+      font-size: 1em
 
 .q-file.file-upload.file-upload
   width: 242px
