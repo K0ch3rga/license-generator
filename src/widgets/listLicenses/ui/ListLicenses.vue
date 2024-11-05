@@ -32,10 +32,12 @@ const downloadDigestFile = (id: string) => {
   getDigestFile(id).then((r) => exportFile(r.filename ?? 'digest file.txt', r.blob))
 }
 
+const resolveEndDate = (d: Date):string => d >= new Date(2597166000000)? 'Бессрочно': date.formatDate(d, 'D.M.YYYY')
+
 const columns: Column[] = [
   {
     name: 'license',
-    label: 'Номер лицензии',
+    label: 'Id лицензии',
     field: (l: License) => l.licenseNumber,
     align: 'left',
     required: true,
@@ -51,9 +53,17 @@ const columns: Column[] = [
     sortable: true,
   },
   {
+    name: 'company',
+    label: 'Наименование компании',
+    field: (l: License) => l.companyName,
+    align: 'left',
+    required: true,
+    sortable: true,
+  },
+  {
     name: 'expiration',
-    label: 'Время окончания',
-    field: (l: License) => date.formatDate(l.expirationTime, 'D.M.YYYY'),
+    label: 'Дата окончания',
+    field: (l: License) => resolveEndDate(l.expirationTime),
     align: 'left',
     required: true,
     sortable: true,
