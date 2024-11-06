@@ -10,6 +10,7 @@ const props = defineProps<{
   options: string[]
   optionLabel: (item: string) => string
   canAdd: boolean
+  canEdit: boolean
 }>()
 const emits = defineEmits<{
   add: []
@@ -17,6 +18,7 @@ const emits = defineEmits<{
   update: []
   removeRole: [T, string]
   addRole: [T, string]
+  edit: [T] // Possibly make array
 }>()
 const selected = ref<T[]>([]) as Ref<T[]>
 const pagination = ref({ rowsPerPage: 0 })
@@ -44,6 +46,14 @@ const pagination = ref({ rowsPerPage: 0 })
         class="btn btn-fill text-button small q-mx-xs"
         label="Добавить"
         @click="emits('add')"
+      />
+      <q-btn
+        v-if="canEdit"
+        flat
+        :ripple="false"
+        class="btn btn-fill text-button small q-mx-xs"
+        label="Изменить"
+        @click="emits('edit', selected[0])"
       />
       <q-btn
         flat

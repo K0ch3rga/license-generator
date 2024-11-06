@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { generateLicense, type NewLicenseDto } from "@/entities/license";
-import { exportFile, date, type QFile, useQuasar, QForm } from "quasar";
-import { onBeforeMount, ref } from "vue";
-import { getErrorByCode, showError } from "../showError";
-import { MapPopup } from "@/shared/ui";
-import { getAllSoftwares, type Software } from "@/entities/software";
-const $q = useQuasar();
-const popupVisible = ref<boolean>(false);
-const loading = ref<boolean>(false);
-const allSoftwares = ref<Software[]>([]);
-const file = ref<File>();
-const chosenSoftwareType = ref<Software[]>([]);
-const product = ref<string>("");
-const company = ref<string>("");
+import { generateLicense, type NewLicenseDto } from "@/entities/license"
+import { exportFile, date, type QFile, useQuasar, QForm } from "quasar"
+import { onBeforeMount, ref } from "vue"
+import { getErrorByCode, showError } from "../showError"
+import { MapPopup } from "@/shared/ui"
+import { getAllSoftwares, type Software } from "@/entities/software"
+const $q = useQuasar()
+const popupVisible = ref<boolean>(false)
+const loading = ref<boolean>(false)
+const allSoftwares = ref<Software[]>([])
+const file = ref<File>()
+const chosenSoftwareType = ref<Software[]>([])
+const product = ref<string>("")
+const company = ref<string>("")
 const expirationDate = ref<string>(
   date.formatDate(date.addToDate(new Date(), { months: 1 }), "D.M.YYYY")
-);
-const endless = ref<boolean>(false);
-const userCount = ref<number>(1);
-const fileUploader = ref<QFile>();
-const requiredAttributes = ref<string[]>([]);
-const additionalData = ref<Array<string>[]>([]);
+)
+const endless = ref<boolean>(false)
+const userCount = ref<number>(1)
+const fileUploader = ref<QFile>()
+const requiredAttributes = ref<string[]>([])
+const additionalData = ref<Array<string>[]>([])
 
-const form = ref<QForm>();
+const form = ref<QForm>()
 
-const emits = defineEmits<{ AddLicense: [] }>();
+const emits = defineEmits<{ AddLicense: [] }>()
 
 const handlePopupToggle = () => {
-  popupVisible.value = !popupVisible.value;
-};
+  popupVisible.value = !popupVisible.value
+}
 
 const handleMapOpen = () => {
   $q.dialog({
@@ -37,27 +37,27 @@ const handleMapOpen = () => {
   }).onOk(
     (payload: Map<string, string>) =>
       (additionalData.value = Array.from(payload.entries()))
-  );
-};
+  )
+}
 
 const handleSubmit = async () => {
   if (!(await form.value?.validate()) || !file.value) {
-    return;
+    return
   }
 
-  loading.value = true;
+  loading.value = true
   if (chosenSoftwareType.value[0]) {
     additionalData.value.push([
       "company_name",
       chosenSoftwareType.value[0].company_name,
-    ]);
+    ])
     additionalData.value.push([
       "license_generator_path",
       chosenSoftwareType.value[0].license_generator_path,
-    ]);
+    ])
     chosenSoftwareType.value[0].required_attributes.forEach((option, i) =>
       additionalData.value.push([option, requiredAttributes.value[i]])
-    );
+    )
   }
 
   generateLicense(file.value, {
@@ -75,30 +75,30 @@ const handleSubmit = async () => {
     ),
   } as NewLicenseDto)
     .then((downloadedFile) => {
-      emits("AddLicense");
+      emits("AddLicense")
       exportFile(
         downloadedFile.filename ?? "license file.txt",
         downloadedFile.blob
-      );
+      )
     })
     .catch((e) => {
-      console.log(e);
-      showError(getErrorByCode(e));
+      console.log(e)
+      showError(getErrorByCode(e))
     })
     .finally(() => {
-      popupVisible.value = false;
-      file.value = undefined;
-      product.value = "";
-      company.value = "";
-      userCount.value = 1;
+      popupVisible.value = false
+      file.value = undefined
+      product.value = ""
+      company.value = ""
+      userCount.value = 1
       expirationDate.value = date.formatDate(
         date.addToDate(new Date(), { months: 1 }),
         "D.M.YYYY"
-      );
-      requiredAttributes.value = new Array<string>();
-      additionalData.value = new Array<string[]>();
-    });
-};
+      )
+      requiredAttributes.value = new Array<string>()
+      additionalData.value = new Array<string[]>()
+    })
+}
 
 const ruLocale = {
   days: "Воскресенье_Понедельник_Вторник_Среда_Четверг_Пятница_Суббота_Воскресенье".split(
@@ -110,18 +110,18 @@ const ruLocale = {
       "_"
     ),
   monthsShort: "Янв_Фев_Мар_Апр_Май_Июн_Июл_Авг_Сен_Окт_Ноя_Дек".split("_"),
-};
+}
 
 const uploadFile = () => {
   // document.getElementById('fileUpload')?.click()
-  fileUploader.value?.pickFiles();
-};
+  fileUploader.value?.pickFiles()
+}
 
 onBeforeMount(() => {
   getAllSoftwares()
     .then((s) => (allSoftwares.value = s))
-    .catch((e) => showError(getErrorByCode(e)));
-});
+    .catch((e) => showError(getErrorByCode(e)))
+})
 </script>
 <template>
   <q-dialog v-model="popupVisible">
@@ -262,7 +262,7 @@ onBeforeMount(() => {
           <div
             v-for="(item, index) in additionalData"
             :key="index"
-            class="flex row justify-between no-wrap options"
+            class="flex row justify-between no-wrap g-10"
           >
             <q-input
               v-model:model-value="item[0]"
@@ -288,7 +288,7 @@ onBeforeMount(() => {
           />
         </q-card-section>
         <q-card-section
-          class="control-buttons flex row justify-between no-wrap"
+          class="g-10 flex row justify-between no-wrap control-buttons"
         >
           <q-btn
             flat
@@ -331,15 +331,10 @@ onBeforeMount(() => {
   :deep(i.text-negative)
     display: none
 
-.control-buttons
-  gap: 10px
-  .q-btn
+.control-buttons.q-btn
     flex: 1 1 100%
 
 .close-btn
   color: var(--grey3)
   border-radius: 8px
-
-.options
-  gap: 10px
 </style>

@@ -17,6 +17,7 @@ import { RoleAssignmentList } from "@/widgets/roleAssignmentList"
 import { Header } from "@/widgets/header"
 import { onBeforeMount, ref } from "vue"
 import { useQuasar } from "quasar"
+import { EditRole } from "@/features/editRole"
 
 const $q = useQuasar()
 const tab = ref<"users" | "roles" | "software">("users")
@@ -70,6 +71,7 @@ const handleCreateRolePopup = () => {
   })
 }
 
+// removed due to ldap registration
 const handleCreateUserPopup = () => {
   return
   // $q.dialog({ component: CreateUser }).onOk((payload: Promise<User>) =>
@@ -142,6 +144,16 @@ const handleDeleteOptionFromSoftware = (software: Software, option: string) =>
 const handleAddOptionToSoftware = (software: Software, option: string) =>
   editSoftwareOption(software, option, true)
 
+const handleEditRole = (role: Role) => {
+  console.log(role)
+  if (!role) return
+  $q.dialog({ component: EditRole, componentProps: { role: role } }).onOk(
+    (roleData: Role) => {
+      console.log(roleData)
+    }
+  )
+}
+
 onBeforeMount(() => {
   handleUpdate()
 })
@@ -176,6 +188,7 @@ onBeforeMount(() => {
           <q-tab-panel name="users">
             <RoleAssignmentList
               :can-add="false"
+              :can-edit="false"
               :columns="userCoulumns"
               :rows="usersData"
               :options="roleSelectOptions"
@@ -184,11 +197,13 @@ onBeforeMount(() => {
               @delete="handleDeleteUser"
               @remove-role="handleDeleteRoleFromUser"
               @add-role="handleAddRoleToUser"
+              @edit="console.log('denied')"
             />
           </q-tab-panel>
           <q-tab-panel name="roles">
             <RoleAssignmentList
               :can-add="true"
+              :can-edit="true"
               :columns="rolesColumns"
               :rows="roles"
               :options="authoritiesSelectOptions"
@@ -197,6 +212,7 @@ onBeforeMount(() => {
               @delete="handleDeleteRole"
               @remove-role="handleDeleteAccessFromRole"
               @add-role="handleAddAccessToRole"
+              @edit="handleEditRole"
             />
           </q-tab-panel>
           <q-tab-panel name="software">
