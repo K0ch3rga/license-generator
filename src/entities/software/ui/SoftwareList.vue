@@ -85,6 +85,14 @@ const selected = ref<Software[]>([])
           rounded
           class="q-my-xs select text-body1"
         />
+        <q-tooltip
+          :delay="1000"
+          anchor="bottom start"
+          self="center left"
+          :offset="[-15, 4]"
+        >
+          Нажмите Enter для подтверждения
+        </q-tooltip>
       </q-td>
     </template>
   </q-table>
