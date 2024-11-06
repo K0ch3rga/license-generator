@@ -1,57 +1,63 @@
 <script setup lang="ts">
-import type { Column } from '@/shared/model'
-import { getAllAccesses, readableAccess, type Access } from '@/entities/accsses'
-import { type Role, deleteRole, getAllRoles, patchRole } from '@/entities/role'
-import { type User, patchUser, deleteUser, getAllUsers } from '@/entities/user'
+import type { Column } from "@/shared/model"
+import { getAllAccesses, readableAccess, type Access } from "@/entities/accsses"
+import { type Role, deleteRole, getAllRoles, patchRole } from "@/entities/role"
+import { type User, patchUser, deleteUser, getAllUsers } from "@/entities/user"
 import {
   deleteSoftware,
   editSoftwareOption,
   getAllSoftwares,
   type Software,
   SoftwareList,
-} from '@/entities/software'
-import { getErrorByCode, showError } from '@/features/showError'
-import { CreateRole } from '@/features/createRole'
-import { CreateUser } from '@/features/createUser'
-import { CreateSoftwarePopup } from '@/features/createSoftware'
-import { RoleAssignmentList } from '@/widgets/roleAssignmentList'
-import { Header } from '@/widgets/header'
-import { onBeforeMount, ref } from 'vue'
-import { useQuasar } from 'quasar'
+} from "@/entities/software"
+import { getErrorByCode, showError } from "@/features/showError"
+import { CreateRole } from "@/features/createRole"
+import { CreateSoftwarePopup } from "@/features/createSoftware"
+import { RoleAssignmentList } from "@/widgets/roleAssignmentList"
+import { Header } from "@/widgets/header"
+import { onBeforeMount, ref } from "vue"
+import { useQuasar } from "quasar"
 
 const $q = useQuasar()
-const tab = ref<'users' | 'roles' | 'software'>('users')
+const tab = ref<"users" | "roles" | "software">("users")
 
 const roles = ref<Role[]>([])
 const rolesColumns = ref<Column[]>([
   {
-    field: 'name',
-    name: 'name',
-    label: 'Роль',
-    align: 'left',
+    field: "name",
+    name: "name",
+    label: "Роль",
+    align: "left",
   },
   {
-    field: 'accesses',
-    name: 'accesses',
-    label: 'Доступы',
-    align: 'left',
+    field: "accesses",
+    name: "accesses",
+    label: "Доступы",
+    align: "left",
   },
 ])
 
 const usersData = ref<User[]>([])
 const userCoulumns = ref<Column[]>([
-  { field: 'username', name: 'name', label: 'Email', align: 'left' },
-  { field: 'roles', name: 'roles', label: 'Роли', align: 'left' },
+  { field: "username", name: "name", label: "Email", align: "left" },
+  { field: "roles", name: "roles", label: "Роли", align: "left" },
 ])
 
 const authorities = ref<Access[]>([])
 
 const softwareData = ref<Software[]>([
-  { company_name: 'oleg', required_attributes: [], license_generator_path: '/var/oleg', id: 0 },
+  {
+    company_name: "oleg",
+    required_attributes: [],
+    license_generator_path: "/var/oleg",
+    id: 0,
+  },
 ])
 
 const roleSelectOptions = ref<string[]>(roles.value.map((v) => v.name))
-const authoritiesSelectOptions = ref<string[]>(authorities.value.map((a) => a.name))
+const authoritiesSelectOptions = ref<string[]>(
+  authorities.value.map((a) => a.name)
+)
 
 const handleCreateRolePopup = () => {
   $q.dialog({
@@ -65,14 +71,16 @@ const handleCreateRolePopup = () => {
 }
 
 const handleCreateUserPopup = () => {
-  $q.dialog({ component: CreateUser }).onOk((payload: Promise<User>) =>
-    payload.then((u) => (usersData.value = usersData.value.concat(u)))
-  )
+  return
+  // $q.dialog({ component: CreateUser }).onOk((payload: Promise<User>) =>
+  //   payload.then((u) => (usersData.value = usersData.value.concat(u)))
+  // )
 }
 
 const handleCreateSoftwarePopup = () => {
-  $q.dialog({ component: CreateSoftwarePopup }).onOk((payload: Promise<Software>) =>
-    payload.then((s) => (softwareData.value = softwareData.value.concat(s)))
+  $q.dialog({ component: CreateSoftwarePopup }).onOk(
+    (payload: Promise<Software>) =>
+      payload.then((s) => (softwareData.value = softwareData.value.concat(s)))
   )
 }
 
@@ -95,11 +103,15 @@ const handleUpdate = () => {
 }
 
 const handleDeleteRole = async (role: Role[]) => {
-  await Promise.all(role.map((r) => deleteRole(r))).catch((e) => showError(getErrorByCode(e)))
+  await Promise.all(role.map((r) => deleteRole(r))).catch((e) =>
+    showError(getErrorByCode(e))
+  )
   handleUpdate()
 }
 const handleDeleteUser = async (user: User[]) => {
-  await Promise.all(user.map((u) => deleteUser(u))).catch((e) => showError(getErrorByCode(e)))
+  await Promise.all(user.map((u) => deleteUser(u))).catch((e) =>
+    showError(getErrorByCode(e))
+  )
   handleUpdate()
 }
 const handleDeleteSoftware = async (softwares: Software[]) => {
@@ -114,9 +126,17 @@ const handleDeleteRoleFromUser = (user: User, roleName: string) =>
 const handleAddRoleToUser = (user: User, roleName: string) =>
   patchUser(user, roles.value.find((r) => r.name == roleName)?.id ?? -1, true)
 const handleDeleteAccessFromRole = (role: Role, accessName: string) =>
-  patchRole(role, authorities.value.find((a) => a.name === accessName)?.id ?? -1, false)
+  patchRole(
+    role,
+    authorities.value.find((a) => a.name === accessName)?.id ?? -1,
+    false
+  )
 const handleAddAccessToRole = (role: Role, accessName: string) =>
-  patchRole(role, authorities.value.find((a) => a.name === accessName)?.id ?? -1, true)
+  patchRole(
+    role,
+    authorities.value.find((a) => a.name === accessName)?.id ?? -1,
+    true
+  )
 const handleDeleteOptionFromSoftware = (software: Software, option: string) =>
   editSoftwareOption(software, option, false)
 const handleAddOptionToSoftware = (software: Software, option: string) =>
@@ -132,14 +152,30 @@ onBeforeMount(() => {
     <q-page>
       <q-card flat class="padded q-mx-md q-mb-md card">
         <q-tabs align="left" narrow-indicator dense v-model="tab">
-          <q-tab :ripple="false" class="menu-item text-body1" name="users" label="Пользователи" />
-          <q-tab :ripple="false" class="menu-item text-body1" name="roles" label="Роли" />
-          <q-tab :ripple="false" class="menu-item text-body1" name="software" label="ПО" />
+          <q-tab
+            :ripple="false"
+            class="menu-item text-body1"
+            name="users"
+            label="Пользователи"
+          />
+          <q-tab
+            :ripple="false"
+            class="menu-item text-body1"
+            name="roles"
+            label="Роли"
+          />
+          <q-tab
+            :ripple="false"
+            class="menu-item text-body1"
+            name="software"
+            label="ПО"
+          />
         </q-tabs>
         <q-separator />
         <q-tab-panels v-model="tab" keep-alive>
           <q-tab-panel name="users">
             <RoleAssignmentList
+              :can-add="false"
               :columns="userCoulumns"
               :rows="usersData"
               :options="roleSelectOptions"
@@ -152,6 +188,7 @@ onBeforeMount(() => {
           </q-tab-panel>
           <q-tab-panel name="roles">
             <RoleAssignmentList
+              :can-add="true"
               :columns="rolesColumns"
               :rows="roles"
               :options="authoritiesSelectOptions"
