@@ -1,34 +1,34 @@
 <script setup lang="ts">
-import { useUserStore } from "@/entities/user";
-import { GenerateLicense } from "@/features/generateLicense";
-import { useQuasar } from "quasar";
-import { onBeforeMount, ref } from "vue";
-import { useRouter } from "vue-router";
+import { useUserStore } from "@/entities/user"
+import { GenerateLicense } from "@/features/generateLicense"
+import { useQuasar } from "quasar"
+import { onBeforeMount, ref } from "vue"
+import { useRouter } from "vue-router"
 
-const $q = useQuasar();
-const theme = ref<boolean>(true);
-const emits = defineEmits<{ licenseGenerated: [] }>();
+const $q = useQuasar()
+const theme = ref<boolean>(true)
+const emits = defineEmits<{ licenseGenerated: [] }>()
 
 const toggleTheme = () => {
   $q.cookies.set("theme", theme.value ? "dark" : "light", {
     expires: 399, // max time allowed by chrome
-  });
-  $q.dark.set(theme.value);
-};
+  })
+  $q.dark.set(theme.value)
+}
 
-const user = useUserStore();
-const routes = useRouter();
+const user = useUserStore()
+const routes = useRouter()
 const handleLogout = () => {
-  user.logout();
-  routes.push({ name: "login" });
-};
+  user.logout()
+  routes.push({ name: "login" })
+}
 
 const navigateMain = () => {
-  routes.push({ name: "main" });
-};
+  routes.push({ name: "main" })
+}
 onBeforeMount(() => {
-  theme.value = $q.dark.isActive;
-});
+  theme.value = $q.dark.isActive
+})
 </script>
 <template>
   <q-header class="q-px-lg q-py-lg" data-test="header">
@@ -39,7 +39,7 @@ onBeforeMount(() => {
         data-test="title"
       >
         <q-icon name="sym_s_home" class="home" />
-        Генератор лицензий
+        <span> Генератор лицензий</span>
       </div>
       <GenerateLicense
         @add-license="emits('licenseGenerated')"
@@ -107,8 +107,9 @@ onBeforeMount(() => {
     color: var(--blue1)
 
 .title
+  display: flex
+  gap: 5px
+  align-items:center
   .q-icon.home
     font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24
-    height: 1.5em
-    width: 1.5em
 </style>
