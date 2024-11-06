@@ -1,19 +1,34 @@
 <script setup lang="ts">
-import type { Column } from '@/shared/model'
-import type { Software } from '..'
-import { ref } from 'vue'
+import type { Column } from "@/shared/model"
+import type { Software } from ".."
+import { ref } from "vue"
 
 const props = defineProps<{ rows: Software[] }>()
 const emits = defineEmits<{
   add: []
   delete: [Software[]]
+  edit: [Software]
   addOption: [Software, string]
   deleteOption: [Software, string]
 }>()
 const columns: Column[] = [
-  { name: 'company_name', label: 'Название', field: 'company_name', align: 'left' },
-  { name: 'required_attributes', label: 'Параметры', field: 'required_attributes', align: 'left' },
-  { name: 'license_generator_path', label: 'Путь', field: 'license_generator_path' },
+  {
+    name: "company_name",
+    label: "Название",
+    field: "company_name",
+    align: "left",
+  },
+  {
+    name: "required_attributes",
+    label: "Параметры",
+    field: "required_attributes",
+    align: "left",
+  },
+  {
+    name: "license_generator_path",
+    label: "Путь",
+    field: "license_generator_path",
+  },
 ]
 const pagination = { rowsPerPage: 0 }
 const selected = ref<Software[]>([])
@@ -42,6 +57,12 @@ const selected = ref<Software[]>([])
       <q-btn
         flat
         class="btn btn-fill text-button small q-mx-xs"
+        label="Изменить"
+        @click="emits('edit', selected[0])"
+      />
+      <q-btn
+        flat
+        class="btn btn-fill text-button small q-mx-xs"
         label="Удалить"
         @click="emits('delete', selected)"
       />
@@ -51,7 +72,9 @@ const selected = ref<Software[]>([])
         <q-select
           v-model="cellProps.row[cellProps.col.name]"
           @add="(option) => emits('addOption', cellProps.row, option.value)"
-          @remove="(option) => emits('deleteOption', cellProps.row, option.value)"
+          @remove="
+            (option) => emits('deleteOption', cellProps.row, option.value)
+          "
           use-input
           use-chips
           multiple

@@ -18,6 +18,7 @@ import { Header } from "@/widgets/header"
 import { onBeforeMount, ref } from "vue"
 import { useQuasar } from "quasar"
 import { EditRole } from "@/features/editRole"
+import { EditSoftware } from "@/features/editSoftware"
 
 const $q = useQuasar()
 const tab = ref<"users" | "roles" | "software">("users")
@@ -145,13 +146,22 @@ const handleAddOptionToSoftware = (software: Software, option: string) =>
   editSoftwareOption(software, option, true)
 
 const handleEditRole = (role: Role) => {
-  console.log(role)
   if (!role) return
   $q.dialog({ component: EditRole, componentProps: { role: role } }).onOk(
     (roleData: Role) => {
       console.log(roleData)
     }
   )
+}
+
+const handleEditSoftware = (software: Software) => {
+  if (!software) return
+  $q.dialog({
+    component: EditSoftware,
+    componentProps: { software: software },
+  }).onOk((softData: Software) => {
+    console.log(softData)
+  })
 }
 
 onBeforeMount(() => {
@@ -222,6 +232,7 @@ onBeforeMount(() => {
               @delete="handleDeleteSoftware"
               @add-option="handleAddOptionToSoftware"
               @delete-option="handleDeleteOptionFromSoftware"
+              @edit="handleEditSoftware"
             />
           </q-tab-panel>
         </q-tab-panels>
