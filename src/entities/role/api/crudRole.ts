@@ -99,7 +99,7 @@ export const editRoleName = async (role: Role, newRole: Role) => {
         "Content-Type": " application/json",
       },
       body: JSON.stringify({
-        id: role.id,
+        role_id: role.id,
         name: newRole.name,
       }),
     })
