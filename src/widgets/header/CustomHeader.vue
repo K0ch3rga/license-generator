@@ -101,15 +101,18 @@ onBeforeMount(() => {
 .clickable-title
   cursor: pointer
 
-.btn.login
+.btn.login.login
   cursor: default
   &:hover
     color: var(--blue1)
+  :deep(.q-focus-helper)
+    opacity: 0
+    background: transparent
 
 .title
   display: flex
   gap: 5px
-  align-items:center
+  align-items: center
   .q-icon.home
     font-variation-settings:'FILL' 1,'wght' 400,'GRAD' 0,'opsz' 24
 </style>
