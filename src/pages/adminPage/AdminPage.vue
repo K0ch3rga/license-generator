@@ -20,6 +20,7 @@ import { useQuasar } from "quasar"
 import { EditRole } from "@/features/editRole"
 import { EditSoftware } from "@/features/editSoftware"
 import { editSoftwareData } from "@/entities/software/api/crudSoftware"
+import { editRoleName } from "@/entities/role/api/crudRole"
 
 const $q = useQuasar()
 const tab = ref<"users" | "roles" | "software">("users")
@@ -149,8 +150,10 @@ const handleAddOptionToSoftware = (software: Software, option: string) =>
 const handleEditRole = (role: Role) => {
   if (!role) return
   $q.dialog({ component: EditRole, componentProps: { role: role } }).onOk(
-    (roleData: Role) => {
-      console.log(roleData)
+    (payload: { role: Role; newRole: Role }) => {
+      editRoleName(payload.role, payload.newRole)
+        .then(handleUpdate)
+        .catch((e) => showError(getErrorByCode(e)))
     }
   )
 }
