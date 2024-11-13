@@ -1,14 +1,16 @@
-import { BACKEND_CONNECTION } from '@/shared/config'
-import { Cookies } from 'quasar'
-import { type Software } from '../'
-import type { NewSoftwareDto } from '../model/Software'
-export const createSoftware = async (software: NewSoftwareDto): Promise<Software> => {
+import { BACKEND_CONNECTION } from "@/shared/config"
+import { Cookies } from "quasar"
+import { type Software } from "../"
+import type { NewSoftwareDto } from "../model/Software"
+export const createSoftware = async (
+  software: NewSoftwareDto
+): Promise<Software> => {
   try {
-    return await fetch(BACKEND_CONNECTION + 'software', {
-      method: 'POST',
+    return await fetch(BACKEND_CONNECTION + "software", {
+      method: "POST",
       headers: {
-        Authorization: 'Bearer ' + Cookies.get('session'),
-        'Content-Type': ' application/json',
+        Authorization: "Bearer " + Cookies.get("session"),
+        "Content-Type": " application/json",
       },
       body: JSON.stringify(software),
     })
@@ -24,11 +26,11 @@ export const createSoftware = async (software: NewSoftwareDto): Promise<Software
 
 export const deleteSoftware = async (software: Software): Promise<Software> => {
   try {
-    return await fetch(BACKEND_CONNECTION + 'software/' + software.id, {
-      method: 'DELETE',
+    return await fetch(BACKEND_CONNECTION + "software/" + software.id, {
+      method: "DELETE",
       headers: {
-        Authorization: 'Bearer ' + Cookies.get('session'),
-        'Content-Type': ' application/json',
+        Authorization: "Bearer " + Cookies.get("session"),
+        "Content-Type": " application/json",
       },
     })
       .then((r) => (r.ok ? r : Promise.reject(r.status)))
@@ -43,8 +45,8 @@ export const deleteSoftware = async (software: Software): Promise<Software> => {
 
 export const getAllSoftwares = async (): Promise<Software[]> => {
   try {
-    return await fetch(BACKEND_CONNECTION + 'software', {
-      headers: { Authorization: 'Bearer ' + Cookies.get('session') },
+    return await fetch(BACKEND_CONNECTION + "software", {
+      headers: { Authorization: "Bearer " + Cookies.get("session") },
     })
       .then((r) => (r.ok ? r : Promise.reject(r.status)))
       .then((r) => r.json())
@@ -62,17 +64,45 @@ export const editSoftwareOption = async (
   add: boolean
 ): Promise<Software> => {
   try {
-    return await fetch(BACKEND_CONNECTION + 'software', {
-      method: 'PATCH',
+    return await fetch(BACKEND_CONNECTION + "software", {
+      method: "PATCH",
       headers: {
-        Authorization: 'Bearer ' + Cookies.get('session'),
-        'Content-Type': ' application/json',
+        Authorization: "Bearer " + Cookies.get("session"),
+        "Content-Type": " application/json",
       },
       body: JSON.stringify({
         id: software.id,
         required_attributes: add
           ? software.required_attributes.concat(option)
           : software.required_attributes.filter((v) => v != option),
+      }),
+    })
+      .then((r) => (r.ok ? r : Promise.reject(r.status)))
+      .then((r) => r.json())
+      .then((r) => r as Software)
+      .catch((e) => Promise.reject(e))
+  } catch (e) {
+    console.log(e)
+    return Promise.reject(600)
+  }
+}
+
+export const editSoftwareData = async (
+  software: Software,
+  newName: string | undefined,
+  newPath: string | undefined
+): Promise<Software> => {
+  try {
+    return await fetch(BACKEND_CONNECTION + "software", {
+      method: "PATCH",
+      headers: {
+        Authorization: "Bearer " + Cookies.get("session"),
+        "Content-Type": " application/json",
+      },
+      body: JSON.stringify({
+        id: software.id,
+        company_name: newName,
+        license_generator_path: newPath,
       }),
     })
       .then((r) => (r.ok ? r : Promise.reject(r.status)))

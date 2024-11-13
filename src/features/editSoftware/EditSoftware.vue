@@ -6,9 +6,12 @@ import { ref } from "vue"
 const { dialogRef, onDialogCancel, onDialogOK } = useDialogPluginComponent()
 const props = defineProps<{ software: Software }>()
 defineEmits([...useDialogPluginComponent.emits])
-const mutatedSoftware = ref<Software>(props.software)
+const mutatedSoftware = ref<Software>(Object.assign({}, props.software))
 const handleSubmit = () =>
-  onDialogOK({ ...props.software, name: mutatedSoftware })
+  onDialogOK({
+    softData: props.software,
+    newSoftware: mutatedSoftware.value,
+  })
 </script>
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogCancel">
@@ -40,7 +43,7 @@ const handleSubmit = () =>
           placeholder="Введите путь"
           no-error-icon
           hide-bottom-space
-          v-model="mutatedSoftware.company_name"
+          v-model="mutatedSoftware.license_generator_path"
           :rules="[(v) => !!v]"
           lazy-rules
           @keyup.enter.prevent="handleSubmit"

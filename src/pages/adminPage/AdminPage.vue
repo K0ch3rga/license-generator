@@ -19,6 +19,7 @@ import { onBeforeMount, ref } from "vue"
 import { useQuasar } from "quasar"
 import { EditRole } from "@/features/editRole"
 import { EditSoftware } from "@/features/editSoftware"
+import { editSoftwareData } from "@/entities/software/api/crudSoftware"
 
 const $q = useQuasar()
 const tab = ref<"users" | "roles" | "software">("users")
@@ -159,8 +160,14 @@ const handleEditSoftware = (software: Software) => {
   $q.dialog({
     component: EditSoftware,
     componentProps: { software: software },
-  }).onOk((softData: Software) => {
-    console.log(softData)
+  }).onOk((payload: { softData: Software; newSoftware: Software }) => {
+    editSoftwareData(
+      payload.softData,
+      payload.newSoftware.company_name,
+      payload.newSoftware.license_generator_path
+    )
+      .then(handleUpdate)
+      .catch((e) => showError(getErrorByCode(e)))
   })
 }
 
