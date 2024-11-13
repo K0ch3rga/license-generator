@@ -86,3 +86,31 @@ export const editSoftwareOption = async (
     return Promise.reject(600)
   }
 }
+
+export const editSoftwareData = async (
+  software: Software,
+  newName: string | undefined,
+  newPath: string | undefined
+): Promise<Software> => {
+  try {
+    return await fetch(BACKEND_CONNECTION + "software", {
+      method: "PATCH",
+      headers: {
+        Authorization: "Bearer " + Cookies.get("session"),
+        "Content-Type": " application/json",
+      },
+      body: JSON.stringify({
+        id: software.id,
+        company_name: newName,
+        license_generator_path: newPath,
+      }),
+    })
+      .then((r) => (r.ok ? r : Promise.reject(r.status)))
+      .then((r) => r.json())
+      .then((r) => r as Software)
+      .catch((e) => Promise.reject(e))
+  } catch (e) {
+    console.log(e)
+    return Promise.reject(600)
+  }
+}

@@ -6,8 +6,9 @@ import { ref } from "vue"
 const { dialogRef, onDialogCancel, onDialogOK } = useDialogPluginComponent()
 const props = defineProps<{ role: Role }>()
 defineEmits([...useDialogPluginComponent.emits])
-const mutatedName = ref<string>(props.role.name)
-const handleSubmit = () => onDialogOK({ ...props.role, name: mutatedName })
+const mutatedRole = ref<Role>(Object.assign({}, props.role))
+const handleSubmit = () =>
+  onDialogOK({ role: props.role, newRole: mutatedRole.value })
 </script>
 <template>
   <q-dialog ref="dialogRef" @hide="onDialogCancel">
@@ -23,7 +24,7 @@ const handleSubmit = () => onDialogOK({ ...props.role, name: mutatedName })
           placeholder="Введите название"
           no-error-icon
           hide-bottom-space
-          v-model="mutatedName"
+          v-model="mutatedRole.name"
           :rules="[(v) => !!v]"
           lazy-rules
           @keyup.enter.prevent="handleSubmit"
