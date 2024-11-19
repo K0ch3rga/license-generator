@@ -1,25 +1,22 @@
 import { BACKEND_CONNECTION } from "@/shared/config"
 import { Cookies } from "quasar"
-import {
-  type NewRoleDTO,
-  type RoleDto,
-  type Role,
-  RoleDtoToRole,
-} from "../model/"
-
-export const createRole = async (role: NewRoleDTO): Promise<Role> => {
+import { type Software } from "../"
+import type { NewSoftwareDto } from "../model/Software"
+export const createSoftware = async (
+  software: NewSoftwareDto
+): Promise<Software> => {
   try {
-    return await fetch(BACKEND_CONNECTION + "roles", {
+    return await fetch(BACKEND_CONNECTION + "software", {
       method: "POST",
       headers: {
         Authorization: "Bearer " + Cookies.get("session"),
         "Content-Type": " application/json",
       },
-      body: JSON.stringify(role),
+      body: JSON.stringify(software),
     })
       .then((r) => (r.ok ? r : Promise.reject(r.status)))
       .then((r) => r.json())
-      .then((r) => r as Role)
+      .then((r) => r as Software)
       .catch((e) => Promise.reject(e))
   } catch (e) {
     console.log(e)
@@ -27,9 +24,9 @@ export const createRole = async (role: NewRoleDTO): Promise<Role> => {
   }
 }
 
-export const deleteRole = async (role: Role): Promise<Role> => {
+export const deleteSoftware = async (software: Software): Promise<Software> => {
   try {
-    return await fetch(BACKEND_CONNECTION + "roles/" + role.id, {
+    return await fetch(BACKEND_CONNECTION + "software/" + software.id, {
       method: "DELETE",
       headers: {
         Authorization: "Bearer " + Cookies.get("session"),
@@ -38,7 +35,7 @@ export const deleteRole = async (role: Role): Promise<Role> => {
     })
       .then((r) => (r.ok ? r : Promise.reject(r.status)))
       .then((r) => r.json())
-      .then((r) => r as Role)
+      .then((r) => r as Software)
       .catch((e) => Promise.reject(e))
   } catch (e) {
     console.log(e)
@@ -46,15 +43,14 @@ export const deleteRole = async (role: Role): Promise<Role> => {
   }
 }
 
-export const getAllRoles = async (): Promise<Role[]> => {
+export const getAllSoftwares = async (): Promise<Software[]> => {
   try {
-    return await fetch(BACKEND_CONNECTION + "roles", {
+    return await fetch(BACKEND_CONNECTION + "software", {
       headers: { Authorization: "Bearer " + Cookies.get("session") },
     })
       .then((r) => (r.ok ? r : Promise.reject(r.status)))
       .then((r) => r.json())
-      .then((r) => r as RoleDto[])
-      .then((r) => r.map((r) => RoleDtoToRole(r)))
+      .then((r) => r as Software[])
       .catch((e) => Promise.reject(e))
   } catch (e) {
     console.log(e)
@@ -62,27 +58,28 @@ export const getAllRoles = async (): Promise<Role[]> => {
   }
 }
 
-export const patchRole = async (
-  role: Role,
-  accessId: number,
+export const editSoftwareOption = async (
+  software: Software,
+  option: string,
   add: boolean
-): Promise<Role> => {
+): Promise<Software> => {
   try {
-    return await fetch(BACKEND_CONNECTION + "roles/" + role.id, {
+    return await fetch(BACKEND_CONNECTION + "software", {
       method: "PATCH",
       headers: {
         Authorization: "Bearer " + Cookies.get("session"),
         "Content-Type": " application/json",
       },
       body: JSON.stringify({
-        role_id: role.id,
-        access_id: accessId,
-        has_access: add,
+        id: software.id,
+        required_attributes: add
+          ? software.required_attributes.concat(option)
+          : software.required_attributes.filter((v) => v != option),
       }),
     })
       .then((r) => (r.ok ? r : Promise.reject(r.status)))
       .then((r) => r.json())
-      .then((r) => r as Role)
+      .then((r) => r as Software)
       .catch((e) => Promise.reject(e))
   } catch (e) {
     console.log(e)
@@ -90,22 +87,27 @@ export const patchRole = async (
   }
 }
 
-export const editRoleName = async (role: Role, newRole: Role) => {
+export const editSoftwareData = async (
+  software: Software,
+  newName: string | undefined,
+  newPath: string | undefined
+): Promise<Software> => {
   try {
-    return await fetch(BACKEND_CONNECTION + "roles/" + role.id, {
+    return await fetch(BACKEND_CONNECTION + "software", {
       method: "PATCH",
       headers: {
         Authorization: "Bearer " + Cookies.get("session"),
         "Content-Type": " application/json",
       },
       body: JSON.stringify({
-        role_id: role.id,
-        name: newRole.name,
+        id: software.id,
+        company_name: newName,
+        license_generator_path: newPath,
       }),
     })
       .then((r) => (r.ok ? r : Promise.reject(r.status)))
       .then((r) => r.json())
-      .then((r) => r as Role)
+      .then((r) => r as Software)
       .catch((e) => Promise.reject(e))
   } catch (e) {
     console.log(e)

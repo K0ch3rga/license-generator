@@ -18,7 +18,6 @@ const handleSubmit = async () => {
   const encryptedPassword = encrypt(
     password.value,
     key
-    // 'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQCYgYmmAZqr+BPDXfYhCOYGZJFzBEjD9yqOlBSTlbFe6rw6DJoiWc/H4ibWu53ViLrj+th2vWFiS7VUIME2z/0ASjuo8JgN97z8huTjztTpemzksOX0Y4OkRDc+D+KfMW3iJATjTgTovIVuvhF0c/utuiY9aDqDuQyKVIL+APpHywIDAQAB'
   )
   if (encryptedPassword === false || !encryptedPassword) {
     showError(getErrorByCode(500))
@@ -71,7 +70,7 @@ const handleSubmit = async () => {
           class="text-input"
           placeholder="Введите пароль"
           v-model="password"
-          :rules="[(v) => !!v]"
+          :rules="[(v) => !!v, (v) => /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{6,}$/.test(v)]"
           no-error-icon
           hide-bottom-space
           @keyup.enter.prevent="handleSubmit"

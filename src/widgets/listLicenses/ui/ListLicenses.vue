@@ -1,85 +1,119 @@
 <script setup lang="ts">
-import { getAllLicenses, type License, getLicenseFile, getDigestFile } from '@/entities/license'
-import { exportTable } from '../model'
-import { type Column } from '@/shared/model'
-import { onMounted, ref } from 'vue'
-import { exportFile, date } from 'quasar'
-import { useUserStore } from '@/entities/user'
-import { showError, getErrorByCode } from '@/features/showError'
+import {
+  getAllLicenses,
+  type License,
+  getLicenseFile,
+  getDigestFile,
+} from "@/entities/license";
+import { exportTable } from "../model";
+import { type Column } from "@/shared/model";
+import { onMounted, ref } from "vue";
+import { exportFile, date } from "quasar";
+import { useUserStore } from "@/entities/user";
+import { showError, getErrorByCode } from "@/features/showError";
 
-const licenses = ref<License[]>([])
-const loading = ref(false)
-const filter = ref('')
-const pagination = ref({ rowsPerPage: 0 })
-const user = useUserStore()
+const licenses = ref<License[]>([]);
+const loading = ref(false);
+const filter = ref("");
+const pagination = ref({ rowsPerPage: 0 });
+const user = useUserStore();
 
 const refreshLicenses = () => {
-  if (!user.canListLicense) return
-  loading.value = true
+  if (!user.canListLicense) return;
+  loading.value = true;
   getAllLicenses()
     .then((l) => (licenses.value = l))
     .catch((e) => showError(getErrorByCode(e)))
-    .finally(() => (loading.value = false))
-}
+    .finally(() => (loading.value = false));
+};
 
 const downloadLicenseFile = (id: string) => {
-  if (!user.canDownloadFile) return
-  getLicenseFile(id).then((r) => exportFile(r.filename ?? 'license file.txt', r.blob))
-}
+  if (!user.canDownloadFile) return;
+  getLicenseFile(id).then((r) =>
+    exportFile(r.filename ?? "license file.txt", r.blob)
+  );
+};
 
 const downloadDigestFile = (id: string) => {
-  if (!user.canDownloadFile) return
-  getDigestFile(id).then((r) => exportFile(r.filename ?? 'digest file.txt', r.blob))
-}
+  if (!user.canDownloadFile) return;
+  getDigestFile(id).then((r) =>
+    exportFile(r.filename ?? "digest file.txt", r.blob)
+  );
+};
+
+const resolveEndDate = (d: Date): string =>
+  d >= new Date(2597166000000) ? "Бессрочно" : date.formatDate(d, "D.M.YYYY");
 
 const columns: Column[] = [
   {
-    name: 'license',
-    label: 'Номер лицензии',
+    name: "license",
+    label: "Id лицензии",
     field: (l: License) => l.licenseNumber,
-    align: 'left',
+    align: "left",
     required: true,
     sortable: true,
     sort: (a: number, b: number) => a - b,
   },
   {
-    name: 'name',
-    label: 'Название продукта',
+    name: "name",
+    label: "Название продукта",
     field: (l: License) => l.productName,
-    align: 'left',
+    align: "left",
     required: true,
     sortable: true,
   },
   {
-    name: 'expiration',
-    label: 'Время окончания',
-    field: (l: License) => date.formatDate(l.expirationTime, 'D.M.YYYY'),
-    align: 'left',
+    name: "company",
+    label: "Наименование компании",
+    field: (l: License) => l.companyName,
+    align: "left",
     required: true,
     sortable: true,
-    sort: (a, b, aRow, bRow) => aRow['expirationTime'].getTime() - bRow['expirationTime'].getTime(),
   },
   {
-    name: 'digest',
-    label: 'Файл аппаратных ресурсов',
+    name: "expiration",
+    label: "Дата окончания",
+    field: (l: License) => resolveEndDate(l.expirationTime),
+    align: "left",
+    required: true,
+    sortable: true,
+    sort: (a, b, aRow, bRow) =>
+      aRow["expirationTime"].getTime() - bRow["expirationTime"].getTime(),
+  },
+  {
+    name: "digest",
+    label: "Файл аппаратных ресурсов",
     field: (l: License) => l.machineDigestFile,
-    align: 'left',
+    align: "left",
     required: true,
     sortable: true,
   },
   {
-    name: 'licenseFile',
-    label: 'Файл лицензии',
+    name: "licenseFile",
+    label: "Файл лицензии",
     field: (l: License) => l.licenseFileName,
-    align: 'left',
+    align: "left",
     required: true,
     sortable: true,
   },
-]
-onMounted(refreshLicenses)
+  {
+    name: "additional",
+    label: "Параметры лицензии",
+    field: (l: License) => l.additionalInfo,
+    align: "left",
+    required: true,
+    sortable: true,
+  },
+];
+onMounted(refreshLicenses);
 </script>
 <template>
-  <q-input outlined class="q-mx-md text-input" placeholder="Поиск" v-model="filter">
+  <q-input
+    outlined
+    class="q-mx-md text-input"
+    placeholder="Поиск"
+    v-model="filter"
+  >
     <template v-slot:append>
       <q-icon size="10.5px" name="img:src/shared/assets/search.svg" />
     </template>
@@ -118,7 +152,10 @@ onMounted(refreshLicenses)
         {{ props.value }}
       </q-td>
     </template>
-    <template v-slot:body-cell-licenseFile="props" v-else-if="!user.canDownloadFile">
+    <template
+      v-slot:body-cell-licenseFile="props"
+      v-else-if="!user.canDownloadFile"
+    >
       <q-td key="licenseFile" :props="props">
         {{ props.value }}
       </q-td>
@@ -136,6 +173,22 @@ onMounted(refreshLicenses)
     <template v-slot:body-cell-digest="props" v-else-if="!user.canDownloadFile">
       <q-td key="digest" :props="props">
         {{ props.value }}
+      </q-td>
+    </template>
+    <template v-slot:body-cell-additional="props">
+      <q-td key="additional" :props="props">
+        <q-chip
+          v-for="value in Object.entries(props.value).map(
+            (v) => v[0] + ': ' + v[1]
+          )"
+          :key="value"
+          :label="value"
+          :clickable="false"
+          :ripple="false"
+          dense
+          outline
+          class="chip"
+        />
       </q-td>
     </template>
     <template v-slot:bottom-row v-if="!user.canListLicense">

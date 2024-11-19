@@ -25,7 +25,7 @@ export const createUser = async (user: NewUserDto): Promise<User> => {
 
 export const deleteUser = async (user: User): Promise<User> => {
   try {
-    return await fetch(BACKEND_CONNECTION + 'users?id=' + user.id, {
+    return await fetch(BACKEND_CONNECTION + 'users/' + user.id, {
       method: 'DELETE',
       headers: {
         Authorization: 'Bearer ' + Cookies.get('session'),

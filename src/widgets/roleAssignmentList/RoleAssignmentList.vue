@@ -1,14 +1,16 @@
 <script setup lang="ts" generic="T extends Role | User">
-import type { Role } from '@/entities/role'
-import type { User } from '@/entities/user'
-import type { Column } from '@/shared/model'
-import { ref, type Ref } from 'vue'
+import type { Role } from "@/entities/role"
+import type { User } from "@/entities/user"
+import type { Column } from "@/shared/model"
+import { ref, type Ref } from "vue"
 
 const props = defineProps<{
   columns: Column[]
   rows: T[]
   options: string[]
   optionLabel: (item: string) => string
+  canAdd: boolean
+  canEdit: boolean
 }>()
 const emits = defineEmits<{
   add: []
@@ -16,6 +18,7 @@ const emits = defineEmits<{
   update: []
   removeRole: [T, string]
   addRole: [T, string]
+  edit: [T] // Possibly make array
 }>()
 const selected = ref<T[]>([]) as Ref<T[]>
 const pagination = ref({ rowsPerPage: 0 })
@@ -37,13 +40,24 @@ const pagination = ref({ rowsPerPage: 0 })
     <template v-slot:top>
       <q-space />
       <q-btn
+        v-if="canAdd"
         flat
+        :ripple="false"
         class="btn btn-fill text-button small q-mx-xs"
         label="Добавить"
         @click="emits('add')"
       />
       <q-btn
+        v-if="canEdit"
         flat
+        :ripple="false"
+        class="btn btn-fill text-button small q-mx-xs"
+        label="Изменить"
+        @click="emits('edit', selected[0])"
+      />
+      <q-btn
+        flat
+        :ripple="false"
         class="btn btn-fill text-button small q-mx-xs"
         label="Удалить"
         @click="emits('delete', selected)"

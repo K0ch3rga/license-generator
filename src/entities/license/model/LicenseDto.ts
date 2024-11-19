@@ -6,4 +6,5 @@ export type LicenseDto = {
   lic_num: string
   machine_digest_file: string
   product_name: string
+  additional_license_information: string
 }

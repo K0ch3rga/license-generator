@@ -5,4 +5,5 @@ export type License = {
   expirationTime: Date
   machineDigestFile: string
   licenseFileName: string
+  additionalInfo: Map<string, string>
 }
